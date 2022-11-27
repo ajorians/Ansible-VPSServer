@@ -1,0 +1,53 @@
+# Run with:
+# ansible-playbook InstallCourier.yml
+
+---
+- name: Install Courier
+  hosts: all
+  tasks:
+
+  - name: Install Courier package on OpenSUSE/SUSE Linux
+    zypper:
+      name: courier*
+      state: present
+
+  - name: Enable Courier IMap service
+    ansible.builtin.systemd:
+      name: courier-imap
+      enabled: yes
+
+  - name: Start Courier IMap service
+    ansible.builtin.systemd:
+      state: restarted
+      name: courier-imap
+
+  - name: Enable Courier IMap SSL service
+    ansible.builtin.systemd:
+      name: courier-imap-ssl
+      enabled: yes
+
+  - name: Start Courier IMap SSL service
+    ansible.builtin.systemd:
+      state: restarted
+      name: courier-imap-ssl
+
+  - name: Enable Courier POP service
+    ansible.builtin.systemd:
+      name: courier-pop
+      enabled: yes
+
+  - name: Start Courier POP service
+    ansible.builtin.systemd:
+      state: restarted
+      name: courier-pop
+
+  - name: Enable Courier POP SSL service
+    ansible.builtin.systemd:
+      name: courier-pop-ssl
+      enabled: yes
+
+  - name: Start Courier POP SSL service
+    ansible.builtin.systemd:
+      state: restarted
+      name: courier-pop-ssl
+

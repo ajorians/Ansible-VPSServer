@@ -1,0 +1,22 @@
+# Run with:
+# ansible-playbook InstallApache2.yml
+
+---
+- name: Install Apache2
+  hosts: all
+  tasks:
+
+  - name: Install Apache2 package on OpenSUSE/SUSE Linux
+    zypper:
+      name: apache2
+      state: present
+
+  - name: Start Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+  - name: Enable Apache2 service
+    ansible.builtin.systemd:
+      name: apache2
+      enabled: yes

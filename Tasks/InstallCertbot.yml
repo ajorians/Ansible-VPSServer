@@ -13,13 +13,27 @@
       state: present
       auto_import_keys: true
 
-  - name: Refresh all repos
-    community.general.zypper_repository:
-      repo: 'snappy'
-      runrefresh: true
-
   - name: Install Snapd package on OpenSUSE/SUSE Linux
     zypper:
       name: snapd
       state: present
 
+  - name: Enable Snapd service
+    ansible.builtin.systemd:
+      name: snapd
+      enabled: yes
+
+  - name: Start Snapd service
+    ansible.builtin.systemd:
+      state: restarted
+      name: snapd
+
+  - name: Enable Snap AppArmor service
+    ansible.builtin.systemd:
+      name: snapd.apparmor
+      enabled: yes
+
+  - name: Start Snap AppArmor service
+    ansible.builtin.systemd:
+      state: restarted
+      name: snapd.apparmor

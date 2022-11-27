@@ -13,11 +13,6 @@
       state: present
       auto_import_keys: true
 
-  - name: Refresh all repos
-    community.general.zypper_repository:
-      repo: 'spirit'
-      runrefresh: true
-
   - name: Install Asterisk package on OpenSUSE/SUSE Linux
     zypper:
       name: asterisk*
