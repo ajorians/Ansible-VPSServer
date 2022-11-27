@@ -1,0 +1,39 @@
+# Run with:
+# ansible-playbook InstallDocker.yml
+
+---
+- name: Install Docker and Start Service
+  hosts: all
+  tasks:
+
+  - name: Install just Docker package on OpenSUSE/SUSE Linux
+    zypper:
+      name: docker
+      state: present
+
+  - name: Install docker-compose package on OpenSUSE/SUSE Linux
+    zypper:
+      name: docker-compose
+      state: present
+
+  # Was needed for Docker Swarm
+  - name: Install Python modules for docker package on OpenSUSE/SUSE Linux
+    zypper:
+      name: python*-docker
+      state: present
+
+  # Was needed for Docker Swarm Deploy
+  - name: Install JSON Diff for docker package on OpenSUSE/SUSE Linux
+    zypper:
+      name: python*-jsondiff
+      state: present
+
+  - name: Enable Docker service
+    ansible.builtin.systemd:
+      name: docker
+      enabled: yes
+
+  - name: Start Docker service
+    ansible.builtin.systemd:
+      state: restarted
+      name: docker

@@ -1,0 +1,14 @@
+# Run with:
+# ansible-playbook -i inventory.ini BasicSetupSteps.yml --ask-vault-pass
+
+---
+- import_playbook: Tasks/SetTimeZone.yml
+- import_playbook: Tasks/CreateAJOriansUser.yml
+- import_playbook: Tasks/ZypperUpdate.yml
+- import_playbook: Tasks/InstallDocker.yml
+- import_playbook: Tasks/InstallGit.yml
+- import_playbook: Tasks/InstallAnsible.yml
+- import_playbook: Tasks/SetupMariaDB.yml
+- import_playbook: Tasks/SetupRedis.yml
+- import_playbook: Tasks/SetupPostgreSQL.yml
+
