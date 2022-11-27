@@ -15,7 +15,7 @@
 
   - name: Refresh all repos
     community.general.zypper_repository:
-      repo: '*'
+      repo: 'spirit'
       runrefresh: true
 
   - name: Install Asterisk package on OpenSUSE/SUSE Linux

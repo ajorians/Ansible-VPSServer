@@ -1,0 +1,54 @@
+# Run with:
+# ansible-playbook InstallPostfix.yml
+
+---
+- name: Install Postfix
+  hosts: all
+  tasks:
+
+  - name: Install Postfix package on OpenSUSE/SUSE Linux
+    zypper:
+      name: postfix
+      state: present
+
+  - name: Set mydestination
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^mydestination'
+      line: 'mydestination = $myhostname, orians.org, localhost, localhost.$mydomain'
+
+  - name: Set myhostname
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^myhostname'
+      line: 'myhostname = mail.orians.org'
+
+  - name: Configure Home MailBox
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^#home_mailbox = Maildir/'
+      line: 'home_mailbox = Maildir/'
+
+  - name: Configure INet Interfaces
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^inet_interfaces = localhost'
+      line: 'inet_interfaces = all'
+
+  - name: Configure SMTPD Helo Required
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtpd_helo_required = no'
+      line: 'smtpd_helo_required = yes'
+
+  #TODO: SASL + More settings
+
+  - name: Install PostfixAdmin package on OpenSUSE/SUSE Linux
+    zypper:
+      name: postfixadmin
+      state: present
+
+        #  - name: Install PostfixAdmin-apache package on OpenSUSE/SUSE Linux
+    #    zypper:
+      #      name: postfixadmin-apache
+        #      state: present

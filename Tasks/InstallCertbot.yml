@@ -1,0 +1,25 @@
+# Run with:
+# ansible-playbook InstallCertbot.yml
+
+---
+- name: Install Certbot
+  hosts: all
+  tasks:
+
+  - name: Add Leap 15.4 Snappy repo and add its gpg key
+    community.general.zypper_repository:
+      name: snappy
+      repo: 'https://download.opensuse.org/repositories/system:/snappy/openSUSE_Leap_15.4'
+      state: present
+      auto_import_keys: true
+
+  - name: Refresh all repos
+    community.general.zypper_repository:
+      repo: 'snappy'
+      runrefresh: true
+
+  - name: Install Snapd package on OpenSUSE/SUSE Linux
+    zypper:
+      name: snapd
+      state: present
+
