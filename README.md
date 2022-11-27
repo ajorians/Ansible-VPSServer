@@ -6,3 +6,6 @@ If you haven't already for your user locally run: ssh-keygen -b 4048 -t rsa -C "
 That doesn't use a password
 
 To persist it: ssh-copy-id root@vpsserver
+
+You do need Python installed for Ansible to work remotely.
+zypper install python3
