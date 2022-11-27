@@ -9,3 +9,7 @@ To persist it: ssh-copy-id root@vpsserver
 
 You do need Python installed for Ansible to work remotely.
 zypper install python3
+
+Being OpenSuse Leap; I did upgrade to latest Leap version:
+https://en.opensuse.org/SDB:System_upgrade
+

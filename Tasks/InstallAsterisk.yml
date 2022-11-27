@@ -1,0 +1,25 @@
+# Run with:
+# ansible-playbook InstallAsterisk.yml
+
+---
+- name: Install Asterisk
+  hosts: all
+  tasks:
+
+  - name: Add Leap 15.4 Asterisk repo and add its gpg key
+    community.general.zypper_repository:
+      name: spirit
+      repo: 'https://download.opensuse.org/repositories/home:/sp1rit:/asterisk/15.4/'
+      state: present
+      auto_import_keys: true
+
+  - name: Refresh all repos
+    community.general.zypper_repository:
+      repo: '*'
+      runrefresh: true
+
+  - name: Install Asterisk package on OpenSUSE/SUSE Linux
+    zypper:
+      name: asterisk*
+      state: present
+

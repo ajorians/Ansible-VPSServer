@@ -1,0 +1,13 @@
+# Run with:
+# ansible-playbook InstallRTorrent.yml
+
+---
+- name: Install RTorrent
+  hosts: all
+  tasks:
+
+  - name: Install RTorrent package on OpenSUSE/SUSE Linux
+    zypper:
+      name: rtorrent
+      state: present
+
