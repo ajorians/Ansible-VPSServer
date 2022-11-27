@@ -2,16 +2,16 @@
 # ansible-playbook -i inventory.ini ServerSetupSteps.yml --ask-vault-pass
 
 ---
-- import_playbook: Tasks/SetTimeZone.yml
-- import_playbook: Tasks/CreateAJOriansUser.yml
-- import_playbook: Tasks/ZypperUpdate.yml
-- import_playbook: Tasks/InstallDocker.yml
-- import_playbook: Tasks/InstallGit.yml
-- import_playbook: Tasks/InstallAnsible.yml
-- import_playbook: Tasks/SetupMariaDB.yml
+#- import_playbook: Tasks/SetTimeZone.yml
+#- import_playbook: Tasks/CreateAJOriansUser.yml
+#- import_playbook: Tasks/ZypperUpdate.yml
+#- import_playbook: Tasks/InstallDocker.yml
+#- import_playbook: Tasks/InstallGit.yml
+#- import_playbook: Tasks/InstallAnsible.yml
+#- import_playbook: Tasks/SetupMariaDB.yml
 
-- import_playbook: Tasks/InstallAsterisk.yml
-- import_playbook: Tasks/InstallScreen.yml
+#- import_playbook: Tasks/InstallAsterisk.yml
+#- import_playbook: Tasks/InstallScreen.yml
 - import_playbook: Tasks/InstallRTorrent.yml
 
 
