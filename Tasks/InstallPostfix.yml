@@ -1,14 +1,27 @@
 # Run with:
-# ansible-playbook InstallPostfix.yml
+# ansible-playbook InstallPostfix.yml --ask-vault-pass
 
 ---
 - name: Install Postfix
   hosts: all
+  vars:
+    saslpasswd: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37373864393961333963393262653162303066623734346534366536666265346137333839353336
+          3931396539336637306365366264336635326533373365630a653263663130353131363431303163
+          34303930643765653534343837363161326162666162356331663363363231353634373761393736
+          3365633765626564370a643532383562326136343836313535396533313138353139386233333562
+          3964
   tasks:
 
   - name: Install Postfix package on OpenSUSE/SUSE Linux
     zypper:
       name: postfix
+      state: present
+
+  - name: Install Postfix-LDAAP package on OpenSUSE/SUSE Linux
+    zypper:
+      name: postfix-ldap
       state: present
 
   - name: Set mydestination
@@ -41,7 +54,36 @@
       regexp: '^smtpd_helo_required = no'
       line: 'smtpd_helo_required = yes'
 
-  #TODO: SASL + More settings
+  - name: Configure SASL Helo Restrictions
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtpd_helo_restrictions ='
+      line: 'smtpd_helo_restrictions = permit_mynetworks,permit_sasl_authenticated,reject_invalid_helo_hostname,reject_non_fqdn_helo_hostname,reject_unknown_helo_hostname'
+
+  - name: Configure SASL Sender Restrictions
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtpd_sender_restrictions = lmdb:/etc/postfix/access'
+      line: 'smtpd_sender_restrictions = permit_mynetworks,permit_sasl_authenticated,reject_unknown_reverse_client_hostname,reject_unknown_client_hostname,lmdb:/etc/postfix/access'
+
+  - name: Configure SASL Security Options
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtp_sasl_security_options ='
+      line: 'smtp_sasl_security_options = noanonymous'
+
+  - name: Configure SASL Password Maps
+    ansible.builtin.lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtp_sasl_password_maps ='
+      line: 'smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd'
+
+  - name: Add SASL username/password
+    lineinfile:
+      state: present
+      dest: /etc/postfix/sasl_passwd
+      regexp: '^orians.org:'
+      line: 'orians.org ajorians:{{saslpasswd}}'
 
   - name: Install PostfixAdmin package on OpenSUSE/SUSE Linux
     zypper:
