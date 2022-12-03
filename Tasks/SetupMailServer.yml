@@ -1,0 +1,30 @@
+# Run with:
+# ansible-playbook SetupMailServer.yml
+
+---
+- name: Setup Mail Server
+  hosts: all
+  tasks:
+
+  - name: Add AJ alias
+    lineinfile:
+      state: present
+      dest: /etc/aliases
+      regexp: '^aj: ajorians'
+      line: 'aj: ajorians'
+
+  - name: Add Andrew alias
+    lineinfile:
+      state: present
+      dest: /etc/aliases
+      regexp: '^andrew: ajorians'
+      line: 'andrew: ajorians'
+
+  - name: Add A.J. alias
+    lineinfile:
+      state: present
+      dest: /etc/aliases
+      regexp: '^a.j: ajorians'
+      line: 'a.j.: ajorians'
+
+

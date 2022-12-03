@@ -1,0 +1,18 @@
+# Run with:
+# ansible-playbook InstallMailClients.yml
+
+---
+- name: Install Mail clients
+  hosts: all
+  tasks:
+
+  - name: Install Alpine package on OpenSUSE/SUSE Linux
+    zypper:
+      name: alpine
+      state: present
+
+  - name: Install Mutt package on OpenSUSE/SUSE Linux
+    zypper:
+      name: mutt
+      state: present
+

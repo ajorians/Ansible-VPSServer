@@ -14,6 +14,17 @@
           3964
   tasks:
 
+    - name: Add Directories To skeleton directory
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      loop:
+        - /etc/skel/Documents
+        - /etc/skel/Downloads
+        - /etc/skel/Mail
+        - /etc/skel/Maildir
+
     - name: Print Variables
       debug:
         msg: "Setting password to: {{ userpasswd }}"

@@ -1,0 +1,58 @@
+# Run with:
+# ansible-playbook InstallSnappyMail.yml
+
+---
+- name: Install SnappyMail
+  hosts: all
+  tasks:
+
+  - name: Make server directory for SnappyMail
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: wwwrun
+      group: www
+      mode: 0755
+    loop:
+      - /srv/www/htdocs/snappymail
+
+  - name: Download SnappyMail from Github
+    ansible.builtin.get_url:
+      url: https://github.com/the-djmaze/snappymail/releases/download/v2.22.5/snappymail-2.22.5.tar.gz
+      dest: /srv/www/htdocs/snappymail/snappymail-2.22.5.tar.gz
+      mode: '0755'
+      owner: wwwrun
+      group: www
+      force: false
+
+  - name: Extract snappymail download
+    ansible.builtin.unarchive:
+      owner: wwwrun
+      group: www
+      src: /srv/www/htdocs/snappymail/snappymail-2.22.5.tar.gz
+      dest: /srv/www/htdocs/snappymail
+      remote_src: yes
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/mail.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /srv/www/htdocs/snappymail
+
+          ServerName mail.orians.org
+          ServerAlias rainloop.orians.org snappymail.orians.org
+
+          <Directory /srv/www/htdocs/snappymail>
+             Options All
+             AllowOverride All
+          </Directory>
+        </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
