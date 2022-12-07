@@ -48,6 +48,24 @@
       regexp: '^smtpd_tls_key_file ='
       line: 'smtpd_tls_key_file = /etc/letsencrypt/live/mail.orians.org/privkey.pem'
 
+  - name: Set SMTP TLS Security level
+    lineinfile:
+      state: present
+      dest: /etc/postfix/main.cf
+      line: 'smtp_tls_security_level = encrypt' # Not sure if I want this exact level
+
+  - name: Set tlsmgr
+    lineinfile:
+      state: present
+      dest: /etc/postfix/master.cf
+      line: 'tlsmgr    unix  -       -       n       1000?   1       tlsmgr'
+
+  - name: Set postlog
+    lineinfile:
+      state: present
+      dest: /etc/postfix/master.cf
+      line: 'postlog   unix-dgram n  -       n       -       1       postlogd'
+
   - name: Start Postfix service
     ansible.builtin.systemd:
       state: restarted
