@@ -56,3 +56,14 @@
       state: restarted
       name: apache2
 
+  - name: Display admin_password contents
+    ansible.builtin.slurp:
+      src: /srv/www/htdocs/snappymail/data/_data_/_default_/admin_password.txt
+    register: snappymail_adminpasswd
+
+  - name: Print Snappymail admin passwd information
+    ansible.builtin.debug:
+      msg: "{{ snappymail_adminpasswd['content'] | b64decode }}"
+  
+# Be sure to configure and then change admin password!
+#

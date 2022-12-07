@@ -9,6 +9,7 @@
 - import_playbook: Tasks/InstallGit.yml
 - import_playbook: Tasks/InstallAnsible.yml
 - import_playbook: Tasks/SetupMariaDB.yml
+- import_playbook: Tasks/InstallMLocate.yml
 
 - import_playbook: Tasks/InstallAsterisk.yml
 - import_playbook: Tasks/InstallScreen.yml
