@@ -11,6 +11,25 @@
       name: apache2
       state: present
 
+  # Certbot wants this enabled
+  - name: Enable the rewrite Apache2 module
+    community.general.apache2_module:
+      state: present
+      name: rewrite
+    ignore_errors: yes #BUG will error if already present
+
+  - name: Enable the proxy Apache2 module
+    community.general.apache2_module:
+      state: present
+      name: proxy
+    ignore_errors: yes #BUG will error if already present
+
+  - name: Enable the proxy_http Apache2 module
+    community.general.apache2_module:
+      state: present
+      name: proxy_http
+    ignore_errors: yes #BUG will error if already present
+
   - name: Start Apache2 service
     ansible.builtin.systemd:
       state: restarted

@@ -37,3 +37,15 @@
     ansible.builtin.systemd:
       state: restarted
       name: snapd.apparmor
+
+  - name: Install Certbot
+    community.general.snap:
+      classic: true
+      name:
+        - certbot
+
+  - name: Create a symbolic link to Certbot
+    ansible.builtin.file:
+      src: /snap/bin/certbot
+      dest: /usr/bin/certbot
+      state: link

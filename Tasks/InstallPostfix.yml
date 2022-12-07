@@ -90,6 +90,16 @@
       name: postfixadmin
       state: present
 
+  - name: Enable Postfix service
+    ansible.builtin.systemd:
+      name: postfix
+      enabled: yes
+
+  - name: Start Postfix service
+    ansible.builtin.systemd:
+      state: restarted
+      name: postfix
+
         #  - name: Install PostfixAdmin-apache package on OpenSUSE/SUSE Linux
     #    zypper:
       #      name: postfixadmin-apache

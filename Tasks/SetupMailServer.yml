@@ -27,4 +27,29 @@
       regexp: '^a.j: ajorians'
       line: 'a.j.: ajorians'
 
+  - name: Set SMTPD Use TLS
+    lineinfile:
+      state: present
+      dest: /etc/postfix/main.cf
+      regexp: '^smtpd_use_tls = no'
+      line: 'smtpd_use_tls = yes'
+
+  - name: Set SMTPD TLS Cert file
+    lineinfile:
+      state: present
+      dest: /etc/postfix/main.cf
+      regexp: '^smtpd_tls_cert_file ='
+      line: 'smtpd_tls_cert_file = /etc/letsencrypt/live/mail.orians.org/cert.pem'
+
+  - name: Set SMTPD TLS Key file
+    lineinfile:
+      state: present
+      dest: /etc/postfix/main.cf
+      regexp: '^smtpd_tls_key_file ='
+      line: 'smtpd_tls_key_file = /etc/letsencrypt/live/mail.orians.org/privkey.pem'
+
+  - name: Start Postfix service
+    ansible.builtin.systemd:
+      state: restarted
+      name: postfix
 
