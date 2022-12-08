@@ -52,7 +52,7 @@
     lineinfile:
       state: present
       dest: /etc/postfix/main.cf
-      line: 'smtp_tls_security_level = encrypt' # Not sure if I want this exact level
+      line: 'smtp_tls_security_level = may'
 
   - name: Set tlsmgr
     lineinfile:
