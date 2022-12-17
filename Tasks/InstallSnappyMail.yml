@@ -43,7 +43,7 @@
           DocumentRoot /srv/www/htdocs/snappymail
 
           ServerName mail.orians.org
-          ServerAlias rainloop.orians.org snappymail.orians.org
+          ServerAlias mail.stage.orians.org rainloop.orians.org snappymail.orians.org
 
           <Directory /srv/www/htdocs/snappymail>
              Options All
@@ -55,6 +55,7 @@
     ansible.builtin.systemd:
       state: restarted
       name: apache2
+
 
   - name: Display admin_password contents
     ansible.builtin.slurp:
