@@ -25,4 +25,4 @@
 - import_playbook: Tasks/InstallSnappyMail.yml
 - import_playbook: Tasks/SetupMailServer.yml
 
-  #- import_playbook: Docker/Jellyfin/SetupJellyfin.yml
+- import_playbook: Docker/Jellyfin/SetupJellyfin.yml
