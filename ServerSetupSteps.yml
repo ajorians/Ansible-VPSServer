@@ -17,9 +17,12 @@
 - import_playbook: Tasks/InstallUnrar.yml
 - import_playbook: Tasks/InstallCertbot.yml
 - import_playbook: Tasks/InstallApache2.yml
+- import_playbook: Tasks/InstallPhp.yml
 - import_playbook: Tasks/InstallPostfix.yml
 - import_playbook: Tasks/InstallCourier.yml
 - import_playbook: Tasks/InstallMailClients.yml
 
 - import_playbook: Tasks/InstallSnappyMail.yml
 - import_playbook: Tasks/SetupMailServer.yml
+
+  #- import_playbook: Docker/Jellyfin/SetupJellyfin.yml
