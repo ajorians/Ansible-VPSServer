@@ -18,3 +18,7 @@
       name: asterisk*
       state: present
 
+  - name: Install sox package on OpenSUSE/SUSE Linux
+    zypper:
+      name: sox
+      state: present
