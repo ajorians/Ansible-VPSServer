@@ -29,3 +29,4 @@
 - import_playbook: Tasks/InstallVSFTP.yml
 
 - import_playbook: Docker/Jellyfin/SetupJellyfin.yml
+- import_playbook: Docker/NextCloud/SetupNextCloud.yml
