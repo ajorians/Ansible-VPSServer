@@ -1,0 +1,91 @@
+# Run with:
+# ansible-playbook InstallBackdrop.yml
+
+---
+- name: Setup Backdrop Site
+  hosts: all
+  tasks:
+
+  - name: check if backdrop exists
+    stat: 
+      path: /srv/www/htdocs/backdrop
+    register: backdrop_exists
+
+  - name: Download Backdrop Release
+    ansible.builtin.get_url:
+      url: https://github.com/backdrop/backdrop/releases/download/1.24.1/backdrop.zip
+      dest: /srv/www/htdocs/backdrop.zip
+    when: backdrop_exists.stat.exists == false
+
+  - name: Extract Backdrop Release
+    ansible.builtin.unarchive:
+      src: /srv/www/htdocs/backdrop.zip
+      dest: /srv/www/htdocs
+      remote_src: yes
+    when: backdrop_exists.stat.exists == false
+
+  - name: Change permissions for Backdrop Release
+    ansible.builtin.file:
+      path: /srv/www/htdocs/backdrop
+      owner: wwwrun
+      group: www
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - backdrop
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: backdropuser
+      host: 'localhost'
+      password: backdroppassword 
+      priv:
+        'backdrop.*': 'ALL,GRANT'
+
+  - name: Change permissions for files directory
+    ansible.builtin.file:
+      path: /srv/www/htdocs/backdrop/files
+      owner: wwwrun
+      group: www
+      mode: '0755'
+
+  - name: Change permissions for settings file
+    ansible.builtin.file:
+      path: /srv/www/htdocs/backdrop/settings.php
+      owner: wwwrun
+      group: www
+      mode: '0755'
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/backdrop.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/backdrop
+           ServerName www.orians.org
+           ServerAlias orians.org
+           <Directory /srv/www/htdocs/backdrop>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d www.orians.org
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2

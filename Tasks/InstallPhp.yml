@@ -15,11 +15,15 @@
     zypper:
       state: present
       name:
+        - php8-APCu
         - php8-cli
         - php8-ctype
         - php8-curl
         - php8-dom
+        - php8-fileinfo
+        - php8-gd
         - php8-iconv
+        - php8-intl
         - php8-mbstring
         - php8-mysql
         - php8-openssl
