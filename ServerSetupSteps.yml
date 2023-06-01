@@ -32,5 +32,7 @@
 - import_playbook: MediaWiki/InstallSemanticRating.yml
 - import_playbook: MediaWiki/SetMediaWikiLogo.yml
 
+- import_playbookk: Tasks/InstallBackdrop.yml
+
 - import_playbook: Docker/Jellyfin/SetupJellyfin.yml
 - import_playbook: Docker/NextCloud/SetupNextCloud.yml
