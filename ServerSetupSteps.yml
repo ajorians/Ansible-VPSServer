@@ -28,5 +28,9 @@
 
 - import_playbook: Tasks/InstallVSFTP.yml
 
+- import_playbook: MediaWiki/InstallMediaWiki.yml
+- import_playbook: MediaWiki/InstallSemanticRating.yml
+- import_playbook: MediaWiki/SetMediaWikiLogo.yml
+
 - import_playbook: Docker/Jellyfin/SetupJellyfin.yml
 - import_playbook: Docker/NextCloud/SetupNextCloud.yml
