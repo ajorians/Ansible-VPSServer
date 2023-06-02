@@ -1,0 +1,54 @@
+# Run with:
+# ansible-playbook InstallPhpMyAdmin.yml
+
+---
+- name: Setup PhpMyAdmin Site
+  hosts: all
+  tasks:
+
+  - name: check if phpmyadmin exists
+    stat: 
+      path: /srv/www/htdocs/phpMyAdmin-5.2.1-all-languages
+    register: phpmyadmin_exists
+
+  - name: Download PhpMyAdmin Release
+    ansible.builtin.get_url:
+      url: https://files.phpmyadmin.net/phpMyAdmin/5.2.1/phpMyAdmin-5.2.1-all-languages.zip
+      dest: /srv/www/htdocs/phpmyadmin.zip
+    when: phpmyadmin_exists.stat.exists == false
+
+  - name: Extract PhpMyAdmin Release
+    ansible.builtin.unarchive:
+      src: /srv/www/htdocs/phpmyadmin.zip
+      dest: /srv/www/htdocs
+      remote_src: yes
+    when: phpmyadmin_exists.stat.exists == false
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/phpmyadmin.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/phpMyAdmin-5.2.1-all-languages
+           ServerName phpmyadmin.orians.org
+           ServerAlias mysql.orians.org
+           <Directory /srv/www/htdocs/phpMyAdmin-5.2.1-all-languages>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d phpmyadmin.orians.org
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2

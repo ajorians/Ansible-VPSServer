@@ -1,0 +1,82 @@
+# Run with:
+# ansible-playbook InstallBirthdays.yml
+
+---
+- name: Setup Birthday Site
+  hosts: all
+  tasks:
+
+  - name: check if Birthdays exists
+    stat: 
+      path: /srv/www/htdocs/birthdays
+    register: birthdays_exists
+
+  - name: Checkout from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/birthdays
+      dest: /srv/www/htdocs/birthdays
+    when: birthdays_exists.stat.exists == false
+
+  - name: Configure username
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/birthdays/src/index.php
+      regexp: '^\$username ='
+      line: '$username = "birthdaysuser";'
+
+  - name: Configure password
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/birthdays/src/index.php
+      regexp: '^\$password ='
+      line: '$password = "birthdayspassword";'
+
+  - name: Configure database
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/birthdays/src/index.php
+      regexp: '^\$dbname ='
+      line: '$dbname = "birthdays";'
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - birthdays
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: birthdaysuser
+      host: 'localhost'
+      password: birthdayspassword 
+      priv:
+        'birthdays.*': 'ALL,GRANT'
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/birthdays.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/birthdays/src
+           ServerName birthdays.orians.org
+           ServerAlias birthday.orians.org
+           <Directory /srv/www/htdocs/birthdays/src>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d birthdays.orians.org
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
