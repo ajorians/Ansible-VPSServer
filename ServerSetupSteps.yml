@@ -36,6 +36,7 @@
 
 - import_playbook: Docker/Jellyfin/SetupJellyfin.yml
 - import_playbook: Docker/NextCloud/SetupNextCloud.yml
+- import_playbook: Docker/Flood/SetupFlood.yml
 
 - import_playbook: Tasks/InstallBirthdays.yml 
 - import_playbook: Tasks/InstallPhpMyAdmin.yml 
