@@ -45,6 +45,14 @@
       mode: '0755'
       state: directory
 
+  - name: Create directory for scgi socket
+    file:
+      path: /opt/DockerSwarmData/rtorrent
+      state: directory
+      owner: ajorians
+      group: users
+      mode: '0777'
+
   - name: Set base directory
     ansible.builtin.lineinfile:
       path: /home/ajorians/.rtorrent.rc
@@ -57,3 +65,12 @@
       regexp: '^method.insert\s=\scfg.download'
       line: 'method.insert = cfg.download, private|const|string, "/mnt/download_files"'
 
+  - name: Set SCGI Socket
+    ansible.builtin.lineinfile:
+      path: /home/ajorians/.rtorrent.rc
+      line: 'network.scgi.open_local = /opt/DockerSwarmData/rtorrent/rpc.socket'
+
+  - name: Set SCGI Socket Permission
+    ansible.builtin.lineinfile:
+      path: /home/ajorians/.rtorrent.rc
+      line: 'execute.nothrow = chmod,770,/opt/DockerSwarmData/rtorrent/rpc.socket'
