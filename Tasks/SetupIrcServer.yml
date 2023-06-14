@@ -1,0 +1,114 @@
+# Run with:
+# ansible-playbook SetupIrcServer.yml --ask-vault-pass
+
+---
+- name: Setup IRC Server
+  hosts: all
+  tasks:
+
+  - name: Uncomment Server Line
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^# <server'
+      line: '<server'
+
+  - name: Set Server Name
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#         name="penguin.omega.example.org"'
+      line: '         name="irc.orians.org"'
+
+  - name: Set Server Description
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#         description="Waddle World"'
+      line: '         description="Orians IRC"'
+
+  - name: Set Server Network Name
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#         network="Omega">'
+      line: '         network="orians">'
+
+  - name: Set Admin
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#<admin'
+      line: '<admin'
+
+  - name: Set Admin Name
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#       name="Johnny English"'
+      line: '       name="A.J. Orians"'
+
+  - name: Set Admin Nickname
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#       nick="MI5"'
+      line: '       nick="ajorians"'
+
+  - name: Set Admin EMail
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^#       email="MI5@the.best.secret.agent">'
+      line: '       email="ajorians@gmail.com">'
+
+  - name: Set SSL Information
+    lineinfile:
+      dest: /etc/inspircd/inspircd.conf
+      insertafter: '# TLS \(SSL\) listener that binds on a TCP\/IP endpoint:'
+      line: '<bind address="" port="6697" type="clients" ssl="gnutls">'
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/irc.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/birthdays/src
+           ServerName irc.orians.org
+           ServerAlias internetrelaychat.orians.org
+           <Directory /srv/www/htdocs/birthdays/src>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d irc.orians.org
+
+  - name: Install gnutls package on OpenSUSE/SUSE Linux
+    zypper:
+      name: gnutls
+      state: present
+
+  - name: Install inspircd-modules-gnutls package on OpenSUSE/SUSE Linux
+    zypper:
+      name: inspircd-modules-gnutls
+      state: present
+
+  - name: Enable inspircd service
+    ansible.builtin.systemd:
+      name: inspircd
+      enabled: yes
+
+  - name: Start inspircd service
+    ansible.builtin.systemd:
+      state: restarted
+      name: inspircd
+

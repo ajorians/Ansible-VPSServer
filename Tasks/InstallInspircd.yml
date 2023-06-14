@@ -1,0 +1,19 @@
+# Run with:
+# ansible-playbook InstallInspircd.yml
+
+---
+- name: Install Inspircd
+  hosts: all
+  tasks:
+
+  - name: Add IRC repository
+    community.general.zypper_repository:
+      repo: 'https://download.opensuse.org/repositories/server:irc/15.4/server:irc.repo'
+      auto_import_keys: true
+      runrefresh: true
+
+  - name: Install Inspircd package on OpenSUSE/SUSE Linux
+    zypper:
+      name: inspircd
+      state: present
+
