@@ -62,11 +62,55 @@
       regexp: '^#       email="MI5@the.best.secret.agent">'
       line: '       email="ajorians@gmail.com">'
 
+  - name: Set gnutls in modules file
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/modules.conf
+      regexp: '^#<module name="ssl_gnutls">'
+      line: '#<module name="ssl_gnutls">'
+
+  - name: Configure SSL Output
+    lineinfile:
+      dest: /etc/inspircd/modules.conf
+      line: "{{ item.line }}"
+    loop:
+      - { line: '<gnutls' }
+      - { line: '    certfile="/etc/inspircd/ssl/cert.pem"' }
+      - { line: '    keyfile="/etc/inspircd/ssl/key.pem"' }
+      - { line: '    priority="SECURE192:-VERS-SSL3.0">' }
+
   - name: Set SSL Information
     lineinfile:
       dest: /etc/inspircd/inspircd.conf
       insertafter: '# TLS \(SSL\) listener that binds on a TCP\/IP endpoint:'
       line: '<bind address="" port="6697" type="clients" ssl="gnutls">'
+
+  # I think rules isn't supported so removing that attribute
+  - name: Close Files tag
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^<files motd="&confdir;motd.txt"'
+      line: '<files motd="&confdir;motd.txt">'
+
+  - name: Comment out rules attribute
+    lineinfile:
+      state: present
+      dest: /etc/inspircd/inspircd.conf
+      regexp: '^       rules="&confdir;rules.txt">'
+      line: '#       rules="&confdir;rules.txt">'
+
+  # Not sure why &confdir; exists if not defined
+  - name: Replace all &confdir;
+    ansible.builtin.replace:
+      path: /etc/inspircd/inspircd.conf
+      regexp: '&confdir;'
+
+  # Not sure why &piddir; exists if not defined
+  - name: Replace all &piddir;
+    ansible.builtin.replace:
+      path: /etc/inspircd/inspircd.conf
+      regexp: '&piddir;'
 
   - name: Make Apache VHost file
     ansible.builtin.copy:
@@ -101,6 +145,28 @@
     zypper:
       name: inspircd-modules-gnutls
       state: present
+
+  - name: Create SSL directory if it does not exist
+    ansible.builtin.file:
+      path: /etc/inspircd/ssl
+      state: directory
+      mode: '0755'
+
+  - name: Create a symbolic link to fullchain file
+    ansible.builtin.file:
+      src: /etc/letsencrypt/live/irc.orians.org/../../archive/irc.orians.org/fullchain1.pem
+      dest: /etc/inspircd.conf/ssl/cert.pem
+      owner: root
+      group: inspircd
+      state: link
+
+  - name: Create a symbolic link to private key file
+    ansible.builtin.file:
+      src: /etc/letsencrypt/live/irc.orians.org/../../archive/irc.orians.org/privkey1.pem
+      dest: /etc/inspircd.conf/ssl/key.pem
+      owner: root
+      group: inspircd
+      state: link
 
   - name: Enable inspircd service
     ansible.builtin.systemd:
