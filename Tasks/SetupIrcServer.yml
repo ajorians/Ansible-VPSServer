@@ -67,7 +67,7 @@
       state: present
       dest: /etc/inspircd/modules.conf
       regexp: '^#<module name="ssl_gnutls">'
-      line: '#<module name="ssl_gnutls">'
+      line: '<module name="ssl_gnutls">'
 
   - name: Configure SSL Output
     lineinfile:
@@ -83,7 +83,7 @@
     lineinfile:
       dest: /etc/inspircd/inspircd.conf
       insertafter: '# TLS \(SSL\) listener that binds on a TCP\/IP endpoint:'
-      line: '<bind address="" port="6697" type="clients" ssl="gnutls">'
+      line: '<bind address="" port="6697" type="clients" sslprofile="gnutls">'
 
   # I think rules isn't supported so removing that attribute
   - name: Close Files tag
@@ -91,7 +91,7 @@
       state: present
       dest: /etc/inspircd/inspircd.conf
       regexp: '^<files motd="&confdir;motd.txt"'
-      line: '<files motd="&confdir;motd.txt">'
+      line: '<files motd="motd.txt">'
 
   - name: Comment out rules attribute
     lineinfile:
@@ -152,21 +152,23 @@
       state: directory
       mode: '0755'
 
-  - name: Create a symbolic link to fullchain file
-    ansible.builtin.file:
-      src: /etc/letsencrypt/live/irc.orians.org/../../archive/irc.orians.org/fullchain1.pem
-      dest: /etc/inspircd.conf/ssl/cert.pem
+  - name: Copy fullchain file
+    ansible.builtin.copy:
+      src: /etc/letsencrypt/live/irc.orians.org/fullchain.pem
+      dest: /etc/inspircd/ssl/cert.pem
+      remote_src: yes
       owner: root
       group: inspircd
-      state: link
+      mode: '0755'
 
-  - name: Create a symbolic link to private key file
-    ansible.builtin.file:
-      src: /etc/letsencrypt/live/irc.orians.org/../../archive/irc.orians.org/privkey1.pem
-      dest: /etc/inspircd.conf/ssl/key.pem
+  - name: Copy private key file
+    ansible.builtin.copy:
+      src: /etc/letsencrypt/live/irc.orians.org/privkey.pem
+      dest: /etc/inspircd/ssl/key.pem
+      remote_src: yes
       owner: root
       group: inspircd
-      state: link
+      mode: '0755'
 
   - name: Enable inspircd service
     ansible.builtin.systemd:
