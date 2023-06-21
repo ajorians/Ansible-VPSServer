@@ -15,6 +15,7 @@
 - import_playbook: Tasks/InstallScreen.yml
 - import_playbook: Tasks/InstallRTorrent.yml
 - import_playbook: Tasks/InstallUnrar.yml
+- import_playbook: Tasks/InstallRSync.yml
 - import_playbook: Tasks/InstallCertbot.yml
 - import_playbook: Tasks/InstallApache2.yml
 - import_playbook: Tasks/InstallPhp.yml
