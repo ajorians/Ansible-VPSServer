@@ -1,0 +1,12 @@
+# Run with:
+# ansible-playbook InstallFtop.yml
+
+---
+- name: Install Ftop
+  hosts: all
+  tasks:
+
+  - name: Install Ftop package on OpenSUSE/SUSE Linux
+    zypper:
+      name: ftop
+      state: present
