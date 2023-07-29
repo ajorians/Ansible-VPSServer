@@ -11,6 +11,8 @@ services:
       - "465:465"  # ESMTP (implicit TLS)
       - "587:587"  # ESMTP (explicit TLS => STARTTLS)
       - "993:993"  # IMAP4 (implicit TLS)
+      - "110:110"  # POP3
+      - "995:995"  # POP3 (with TLS)
     volumes:
       - /opt/DockerSwarmData/mailserver/maildata/:/var/mail/
       - /opt/DockerSwarmData/mailserver/mailstate/:/var/mail-state/
@@ -22,6 +24,7 @@ services:
       - ENABLE_RSPAMD=1
       - ENABLE_CLAMAV=1
       - ENABLE_FAIL2BAN=1
+      - ENABLE_POP3=1
       - SSL_TYPE=letsencrypt
     cap_add:
       - NET_ADMIN # For Fail2Ban to work

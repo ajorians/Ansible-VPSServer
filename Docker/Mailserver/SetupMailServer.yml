@@ -40,7 +40,7 @@
       path: /opt/DockerSwarmData/mailserver/maildata/orians.org/ajorians
     register: user_exists
 
-  - name: Run a simple command (command)
+  - name: Create ajorians email account
     community.docker.docker_container_exec:
       container: mailserver
       command: setup email add ajorians@orians.org testpass
@@ -58,3 +58,18 @@
       msg: "Update password via: docker exec -ti mailserver setup email update ajorians@orians.org NewPasswd"
     when: user_exists.stat.exists == false
 
+  - name: Create postmaster email alias
+    community.docker.docker_container_exec:
+      container: mailserver
+      command: setup alias add postmaster@orians.org ajorians@orians.org
+      chdir: /root
+    register: result
+    when: user_exists.stat.exists == false
+
+  - name: Create aj email alias
+    community.docker.docker_container_exec:
+      container: mailserver
+      command: setup alias add aj@orians.org ajorians@orians.org
+      chdir: /root
+    register: result
+    when: user_exists.stat.exists == false
