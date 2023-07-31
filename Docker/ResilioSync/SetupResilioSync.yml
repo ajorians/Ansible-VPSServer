@@ -20,6 +20,7 @@
       - /mnt/DockerSwarmData/resiliosync/downloads
       - /root/docker
       - /root/docker/resiliosync
+      - /mnt/backups
 
   - name: Copy the docker-compose file with owner and permissions
     ansible.builtin.copy:

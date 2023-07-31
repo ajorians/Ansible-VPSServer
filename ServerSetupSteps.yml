@@ -27,6 +27,8 @@
 - import_playbook: Tasks/InstallFail2Ban.yml
 - import_playbook: Tasks/InstallMailClients.yml
 
+- import_playbook: Docker/SetupResilioSync.yml
+
 - import_playbook: Tasks/InstallSnappyMail.yml
 #- import_playbook: Tasks/SetupMailServer.yml
 
@@ -47,3 +49,6 @@
 
 - import_playbook: Tasks/InstallInspircd.yml 
 - import_playbook: Tasks/SetupIrcServer.yml 
+
+- import_playbook: Backups/SetupBackups.yml 
+
