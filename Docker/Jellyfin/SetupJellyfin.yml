@@ -19,6 +19,9 @@
       - /opt/DockerSwarmData/jellyfin/config
       - /opt/DockerSwarmData/jellyfin/tvshows
       - /opt/DockerSwarmData/jellyfin/movies
+      - /mnt/allwrite
+      - /mnt/allwrite/family
+      - /mnt/allwrite/new
       - /root/docker
       - /root/docker/jellyfin
 

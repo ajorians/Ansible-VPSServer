@@ -13,6 +13,8 @@ services:
       - /opt/DockerSwarmData/jellyfin/tvshows:/data/tvshows
       - /opt/DockerSwarmData/jellyfin/movies:/data/movies
       - /mnt/download_files:/data/downloads
+      - /mnt/allwrite/family:/data/family
+      - /mnt/allwrite/new:/data/new
     ports:
       - 9000:8096
       - 9001:8920 #optional
