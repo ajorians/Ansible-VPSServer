@@ -21,6 +21,7 @@
       - /opt/DockerSwarmData/jellyfin/movies
       - /mnt/allwrite
       - /mnt/allwrite/family
+      - /mnt/allwrite/favorites
       - /mnt/allwrite/new
       - /root/docker
       - /root/docker/jellyfin
