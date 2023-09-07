@@ -20,17 +20,16 @@
     ansible.builtin.meta: end_play
     when: localsettings_exists.stat.exists == false
 
-# TODO: Download logo from a central spot
-#  - name: check if logo exists
-#    stat:
-#      path: /srv/www/htdocs/mediawiki-1.39.3/resources/assets/lexielogo.png
-#    register: logo_exists
+  - name: check if logo exists
+    stat:
+      path: /srv/www/htdocs/mediawiki-1.39.3/resources/assets/lexielogo.png
+    register: logo_exists
 
-#  - name: Download logo image
-#    ansible.builtin.get_url:
-#      url: 
-#      dest: /srv/www/htdocs/mediawiki-1.39.3/resources/assets/lexielogo.png
-#    when: logo_exists.stat.exists == false
+  - name: Download logo image
+    ansible.builtin.get_url:
+      url: http://mediaassets.orians.org/lexielogo.png 
+      dest: /srv/www/htdocs/mediawiki-1.39.3/resources/assets/lexielogo.png
+    when: logo_exists.stat.exists == false
 
   - name: Add Logo to LocalSettings.php
     lineinfile:
