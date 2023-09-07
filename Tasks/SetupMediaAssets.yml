@@ -1,0 +1,47 @@
+# Run with:
+# ansible-playbook SetupMediaAssets.yml
+
+---
+- name: Setup Media Assets
+  hosts: all
+  tasks:
+
+  - name: check if MediaAssets exists
+    stat: 
+      path: /srv/www/htdocs/mediaassets
+    register: mediaassets_exists
+
+  - name: Checkout from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/mediaassets
+      dest: /srv/www/htdocs/mediaassets
+    when: mediaassets_exists.stat.exists == false
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/mediaassets.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/mediaassets
+           ServerName mediaassets.orians.org
+           ServerAlias mediaasset.orians.org
+           <Directory /srv/www/htdocs/mediaassets>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
+#  - name: Obtain SSL certificate
+#    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d mediaassets.orians.org
+
+#  - name: Restart Apache2 service
+#    ansible.builtin.systemd:
+#      state: restarted
+#      name: apache2
