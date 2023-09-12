@@ -52,4 +52,5 @@
 - import_playbook: Tasks/SetupIrcServer.yml 
 
 - import_playbook: Backups/SetupBackups.yml 
+- import_playbook: Backups/InstallCronJobs.yml 
 

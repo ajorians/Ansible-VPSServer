@@ -1,0 +1,25 @@
+# Run with:
+# ansible-playbook InstallCronJobs.yml
+
+---
+- name: Install Cron jobs
+  hosts: all
+  tasks:
+
+  - name: check if Backup Scripts exists
+    stat:
+      path: /home/ajorians/Documents/git/BackupScripts
+    register: backupscripts_exists
+
+  - name: Checkout from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/BackupScripts
+      dest: /home/ajorians/Documents/git/BackupScripts
+    when: backupscripts_exists.stat.exists == false
+
+  - name: Backup MediaWiki files and database
+    ansible.builtin.cron:
+      name: "MediaWiki"
+      minute: "5"
+      hour: "3"
+      job: "/home/ajorians/Documents/git/BackupScripts/MediaWiki/BackupMediaWiki.sh"
