@@ -23,3 +23,26 @@
       minute: "5"
       hour: "3"
       job: "/home/ajorians/Documents/git/BackupScripts/MediaWiki/BackupMediaWiki.sh"
+
+  - name: Backup Birthdays files and database
+    ansible.builtin.cron:
+      name: "Birthdays"
+      minute: "10"
+      hour: "3"
+      job: "/home/ajorians/Documents/git/BackupScripts/Birthdays/BackupBirthdays.sh"
+
+  - name: Backup Backdrop files and database
+    ansible.builtin.cron:
+      name: "Backdrop"
+      minute: "15"
+      hour: "3"
+      job: "/home/ajorians/Documents/git/BackupScripts/Backdrop/BackupBackdrop.sh"
+
+  - name: Backup Snappymail files
+    ansible.builtin.cron:
+      name: "Snappymail"
+      minute: "20"
+      hour: "3"
+      job: "/home/ajorians/Documents/git/BackupScripts/Snappymaill/BackupSnappymail.sh"
+
+
