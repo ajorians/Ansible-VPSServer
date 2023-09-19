@@ -38,6 +38,7 @@
 - import_playbook: MediaWiki/InstallMediaWiki.yml
 - import_playbook: MediaWiki/InstallSemanticRating.yml
 - import_playbook: MediaWiki/SetMediaWikiLogo.yml
+- import_playbook: MediaWiki/InstallTemplateStyles.yml
 
 - import_playbook: Tasks/InstallBackdrop.yml
 
