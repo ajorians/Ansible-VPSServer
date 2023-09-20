@@ -1,0 +1,52 @@
+# Run with:
+# ansible-playbook InstallXMPP.yml
+
+---
+- name: Install Prosody XMPP
+  hosts: all
+  tasks:
+
+  - name: Add community repository
+    community.general.zypper_repository:
+      repo: 'https://mirrorcache-us.opensuse.org/repositories/home:/lemmy04/15.4/home:lemmy04.repo'
+      auto_import_keys: true
+      runrefresh: true
+
+  - name: Install Prosody package on OpenSUSE/SUSE Linux
+    zypper:
+      name: prosody
+      state: present
+
+  - name: Set Admins
+    lineinfile:
+      state: present
+      dest: /etc/prosody/prosody.cfg.lua
+      regexp: '^admins ='
+      line: 'admins = { "ajorians@orians.org" }'
+
+  - name: Set VirtualHost
+    lineinfile:
+      state: present
+      dest: /etc/prosody/prosody.cfg.lua
+      regexp: '^VirtualHost "'
+      line: 'VirtualHost "orians.org"'
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d orians.org
+
+  - name: Tell Prosody about SSL certificate
+    shell: prosodyctl --root cert import /etc/letsencrypt/live/
+
+  - name: Print how to manually add a user
+    ansible.builtin.debug:
+      msg: "To manually add a user run: prosodyctl adduser aj@orians.org"
+
+  - name: Enable Prosody service
+    ansible.builtin.systemd:
+      name: prosody
+      enabled: yes
+
+  - name: Start Prosody service
+    ansible.builtin.systemd:
+      state: restarted
+      name: prosody
