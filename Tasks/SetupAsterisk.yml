@@ -40,7 +40,7 @@
 
   - name: Download Bad sound
     ansible.builtin.get_url:
-      url: http://mediaassets.orians.org/asterisk/ba.wav
+      url: http://mediaassets.orians.org/asterisk/bad.wav
       dest: /usr/share/asterisk/sounds/en/bad.wav
 
   - name: Change bad permissions
