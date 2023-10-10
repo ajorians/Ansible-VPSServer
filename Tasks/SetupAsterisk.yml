@@ -1,0 +1,51 @@
+# Run with:
+# ansible-playbook SetupAsterisk.yml
+
+---
+- name: Setup Asterisk
+  hosts: all
+  tasks:
+
+  - name: Create Asterisk AGI directory
+    ansible.builtin.file:
+      path: /usr/share/asterisk/agi-bin
+      owner: root
+      group: root
+      mode: '0755'
+      state: directory
+
+  - name: Math AGI Script
+    ansible.builtin.get_url:
+      url: http://mediaassets.orians.org/asterisk/math.agi
+      dest: /usr/share/asterisk/agi-bin/math.agi
+
+  - name: Change script permissions
+    ansible.builtin.file:
+      path: /usr/share/asterisk/agi-bin/math.agi
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Download Good sound
+    ansible.builtin.get_url:
+      url: http://mediaassets.orians.org/asterisk/good.wav
+      dest: /usr/share/asterisk/sounds/en/good.wav
+
+  - name: Change good permissions
+    ansible.builtin.file:
+      path: /usr/share/asterisk/sounds/en/good.wav
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Download Bad sound
+    ansible.builtin.get_url:
+      url: http://mediaassets.orians.org/asterisk/ba.wav
+      dest: /usr/share/asterisk/sounds/en/bad.wav
+
+  - name: Change bad permissions
+    ansible.builtin.file:
+      path: /usr/share/asterisk/sounds/en/bad.wav
+      owner: root
+      group: root
+      mode: '0755'
