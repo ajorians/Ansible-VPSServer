@@ -1,0 +1,18 @@
+# Run with:
+# ansible-playbook InstallOpenSSL.yml
+
+---
+- name: Install OpenSSL
+  hosts: all
+  tasks:
+
+  - name: Install OpenSSL package on OpenSUSE/SUSE Linux
+    zypper:
+      name: openssl-3
+      state: present
+
+  - name: Install OpenSSL Devel package on OpenSUSE/SUSE Linux
+    zypper:
+      name: libopenssl-3-devel
+      state: present
+
