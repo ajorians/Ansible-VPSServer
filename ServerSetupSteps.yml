@@ -22,7 +22,6 @@
 - import_playbook: Tasks/InstallJansson.yml
 - import_playbook: Tasks/InstallXML2.yml
 - import_playbook: Tasks/InstallSQLite3.yml
-- import_playbook: Tasks/InstallAsterisk.yml
 
 - import_playbook: Tasks/InstallScreen.yml
 - import_playbook: Tasks/InstallRTorrent.yml
@@ -33,15 +32,12 @@
 - import_playbook: Tasks/InstallPhp.yml
 
 - import_playbook: Docker/Mailserver/SetupMailServer.yml
-#- import_playbook: Tasks/InstallPostfix.yml
-#- import_playbook: Tasks/InstallCourier.yml
 - import_playbook: Tasks/InstallFail2Ban.yml
 - import_playbook: Tasks/InstallMailClients.yml
 
-- import_playbook: Docker/SetupResilioSync.yml
+- import_playbook: Docker/ResilioSync/SetupResilioSync.yml
 
 - import_playbook: Tasks/InstallSnappyMail.yml
-#- import_playbook: Tasks/SetupMailServer.yml
 
 - import_playbook: Tasks/InstallVSFTP.yml
 
@@ -64,8 +60,9 @@
 - import_playbook: Tasks/SetupIrcServer.yml
 - import_playbook: Tasks/InstallXMPP.yml 
 
-- import_playbook: Tasks/SetupAsterisk.yml 
-
 - import_playbook: Backups/SetupBackups.yml 
-- import_playbook: Backups/InstallCronJobs.yml 
+#- import_playbook: Backups/InstallCronJobs.yml 
+
+- import_playbook: Backups/InstallAsterisk.yml 
+#- import_playbook: Backups/InstallFreePBX.yml 
 

@@ -1,0 +1,221 @@
+# Run with:
+# ansible-playbook InstallFreePBX.yml
+
+---
+- name: Install FreePBX
+  hosts: all
+  vars:
+    databasepasswd: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64363739626261663336323432333332326265333831643664326239316533373337323231313132
+          3537396163376266666162326262316166613364636331340a326630636464313962623331636138
+          30653237353231633732313164373234323731333361323762363362333862363730363237343030
+          3563333664613937390a306261643631636435666437363138663237636132306538323430646661
+          6434
+  tasks:
+
+  - name: Check if FreePBX source exists
+    stat:
+      path: /root/freepbx
+    register: freepbx_exists
+
+  - name: Clone FreePBX Source
+    ansible.builtin.git:
+      repo: https://github.com/FreePBX/framework.git 
+      dest: /root/freepbx
+      depth: 1
+      version: release/17.0
+    when: freepbx_exists.stat.exists == false
+
+  - name: Start as wwwrun user
+    ansible.builtin.shell: sed -i 's/-U asterisk -G asterisk/-U wwwrun -G www/' /root/freepbx/start_asterisk
+
+  - name: Stop Apache2 service
+    ansible.builtin.systemd:
+      state: stopped
+      name: apache2
+
+  - name: Add the user 'wwwrun' with a bash shell, appending the group 'asterisk' to the user's groups
+    ansible.builtin.user:
+      name: wwwrun
+      home: /home/wwwrun
+      create_home: true
+      shell: /bin/bash
+      groups: asterisk
+      append: yes
+
+  - name: Add Group write permissions to /var/lib/asterisk
+    ansible.builtin.file:
+      path: /var/lib/asterisk/
+      mode: '0775'
+
+  - name: Add Group write permissions to /var/log/asterisk
+    ansible.builtin.file:
+      path: /var/log/asterisk/
+      mode: '0775'
+
+  - name: Add Group write permissions to /var/run/asterisk
+    ansible.builtin.file:
+      path: /var/run/asterisk/
+      mode: '0775'
+
+  - name: Add Group write permissions to /etc/asterisk
+    ansible.builtin.file:
+      path: /etc/asterisk/
+      mode: '0775'
+
+  - name: Add Group write permissions to /usr/sbin/asterisk
+    ansible.builtin.file:
+      path: /usr/sbin/asterisk
+      mode: '0775'
+
+#  - name: Add Group write permissions to /usr/sbin/asterisk
+#    ansible.builtin.file:
+#      path: /usr/sbin/asterisk
+#      mode: '0775'
+
+  - name: Start Asterisk Manually
+    ansible.builtin.shell: su - wwwrun -c "/usr/local/bin/asterisk"
+
+#  - name: Start Asterisk
+#    ansible.builtin.shell: ./start_asterisk start
+#    args:
+#      chdir: /root/freepbx
+
+  - name: Create FreePBX server directory if it does not exist
+    ansible.builtin.file:
+      path: /srv/www/htdocs/freepbx
+      state: directory
+      mode: '0755'
+
+  - name: Make ODBC File
+    ansible.builtin.copy:
+      dest: /etc/odbcinst.ini
+      content: |
+        [MySQL]
+        Description = ODBC for MySQL (MariaDB)
+        Driver = /usr/lib64/mariadb/libmaodbc.so
+        FileUsage = 1
+
+  - name: Make ODBC INI File
+    ansible.builtin.copy:
+      dest: /etc/odbc.ini
+      content: |
+        [MySQL-asteriskcdrdb]
+        Description=MySQL connection to 'asteriskcdrdb' database
+        driver=MySQL
+        server=localhost
+        database=asteriskcdrdb
+        Port=3306
+        Socket=/var/lib/mysql/mysql.sock
+        option=3
+        Charset=utf8
+
+  - name: Run Install Script
+    ansible.builtin.shell: ./install --dbpass={{databasepasswd}} --webroot=/srv/www/htdocs/freepbx --user=wwwrun --group=www -n
+    register: freepbxinstall_status
+    ignore_errors: true
+    args:
+      chdir: /root/freepbx
+
+  - name: Assert install was successful
+    assert:
+      that:
+        - "'You have successfully installed FreePBX' in freepbxinstall_status.stdout"
+
+  - name: Create a symbolic link
+    ansible.builtin.file:
+      src: /usr/sbin/fwconsole
+      dest: /usr/local/bin/fwconsole
+      state: link
+
+  - name: Install Framework
+    ansible.builtin.shell: fwconsole ma downloadinstall framework
+    args:
+      chdir: /root/freepbx
+
+  - name: Install Modules 1
+    ansible.builtin.shell: fwconsole ma downloadinstall cdr conferences customappsreg dashboard featurecodeadmin infoservices music pm2 sipsettings voicemail
+    args:
+      chdir: /root/freepbx
+
+  - name: Install Modules 2
+    ansible.builtin.shell: fwconsole ma downloadinstall announcement callforward callrecording callwaiting donotdisturb findmefollow parking ringgroups
+    args:
+      chdir: /root/freepbx
+
+  - name: Reload Again
+    ansible.builtin.shell: fwconsole reload
+    args:
+      chdir: /root/freepbx
+
+  - name: Set Http Bind Address
+    ansible.builtin.shell: fwconsole setting HTTPBINDADDRESS 127.0.0.1
+    args:
+      chdir: /root/freepbx
+
+  - name: Set Http TLS Bind Address
+    ansible.builtin.shell: fwconsole setting HTTPTLSBINDADDRESS 127.0.0.1
+    args:
+      chdir: /root/freepbx
+
+  - name: Make Systemd file
+    ansible.builtin.copy:
+      dest: /etc/systemd/system/freepbx.service
+      content: |
+        [Unit]
+        Description=FreePBX VoIP Server
+        After=mysql.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/sbin/fwconsole start -q
+        ExecStop=/usr/sbin/fwconsole stop -q
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: Enable FreePBX service
+    ansible.builtin.systemd:
+      name: freepbx
+      enabled: yes
+
+  - name: Set AllowOveride All
+    ansible.builtin.shell: sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/default-server.conf
+
+ # - name: Make Apache Run As Asterisk
+#    ansible.builtin.copy:
+#      dest: /etc/apache2/uid.conf
+#      content: |
+#        User asterisk
+#        Group asterisk
+
+#  - name: Recursively change ownership of /var/lib/php8/sessions
+#    ansible.builtin.file:
+#      path: /var/lib/php8/sessions
+#      state: directory
+#      recurse: yes
+#      owner: asterisk
+#      group: asterisk
+
+  - name: Make VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/freepbx.conf
+      content: |
+        <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          ServerName freepbx.orians.org
+          ServerAlias freepbx
+          DocumentRoot "/srv/www/htdocs/freepbx"
+          <Directory /srv/www/htdocs/freepbx>
+            Options All
+            AllowOverride All
+          </Directory>
+        </VirtualHost>
+
+  - name: Start Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2
+
