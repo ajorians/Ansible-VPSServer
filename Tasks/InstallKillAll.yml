@@ -1,0 +1,14 @@
+# Run with:
+# ansible-playbook InstallKillAll.yml
+
+---
+- name: Install KillAll
+  hosts: all
+  tasks:
+
+  - name: Install PSMisc package on OpenSUSE/SUSE Linux
+    zypper:
+      name: psmisc
+      state: present
+
+

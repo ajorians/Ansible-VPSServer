@@ -27,7 +27,7 @@
       version: release/17.0
     when: freepbx_exists.stat.exists == false
 
-  - name: Start as wwwrun user
+  - name: Adjust script to start as wwwrun user
     ansible.builtin.shell: sed -i 's/-U asterisk -G asterisk/-U wwwrun -G www/' /root/freepbx/start_asterisk
 
   - name: Stop Apache2 service
@@ -74,6 +74,10 @@
 #      path: /usr/sbin/asterisk
 #      mode: '0775'
 
+  - name: Killall Asterisk
+    ansible.builtin.shell: killall asterisk --wait
+    ignore_errors: true # In case there is no process
+
   - name: Start Asterisk Manually
     ansible.builtin.shell: su - wwwrun -c "/usr/local/bin/asterisk"
 
@@ -81,6 +85,35 @@
 #    ansible.builtin.shell: ./start_asterisk start
 #    args:
 #      chdir: /root/freepbx
+
+  - name: Check if FreePBX www location exists
+    stat:
+      path: /srv/www/htdocs/freepbx
+    register: freepbxwww_exists
+
+  - name: Remove /etc/freepbx.conf
+    ansible.builtin.file:
+      path: /etc/freepbx.conf
+      state: absent
+    when: freepbxwww_exists.stat.exists == false
+
+  - name: Remove /etc/freepbx.conf
+    ansible.builtin.file:
+      path: /etc/amportal.conf
+      state: absent
+    when: freepbxwww_exists.stat.exists == false
+
+  - name: Delete database with name 'asterisk'
+    community.mysql.mysql_db:
+      name: asterisk
+      state: absent
+    when: freepbxwww_exists.stat.exists == false
+
+  - name: Delete database with name 'asteriskcdrdb'
+    community.mysql.mysql_db:
+      name: asteriskcdrdb
+      state: absent
+    when: freepbxwww_exists.stat.exists == false
 
   - name: Create FreePBX server directory if it does not exist
     ansible.builtin.file:
@@ -94,7 +127,7 @@
       content: |
         [MySQL]
         Description = ODBC for MySQL (MariaDB)
-        Driver = /usr/lib64/mariadb/libmaodbc.so
+        Driver = /usr/lib64/libmaodbc.so
         FileUsage = 1
 
   - name: Make ODBC INI File
@@ -144,6 +177,21 @@
     args:
       chdir: /root/freepbx
 
+  - name: Install Modules 3
+    ansible.builtin.shell: fwconsole ma downloadinstall arimanager recordings logfiles asteriskinfo ivr queues
+    args:
+      chdir: /root/freepbx
+
+  - name: Install Modules 4
+    ansible.builtin.shell: fwconsole ma downloadinstall cel calendar miscapps miscdests timeconditions printextensions
+    args:
+      chdir: /root/freepbx
+
+  - name: Install Modules 5
+    ansible.builtin.shell: fwconsole ma downloadinstall bulkhandler hotelwakeup presencestate
+    args:
+      chdir: /root/freepbx
+
   - name: Reload Again
     ansible.builtin.shell: fwconsole reload
     args:
@@ -156,6 +204,12 @@
 
   - name: Set Http TLS Bind Address
     ansible.builtin.shell: fwconsole setting HTTPTLSBINDADDRESS 127.0.0.1
+    args:
+      chdir: /root/freepbx
+
+  # I had a problem with ring groups and this fixed that
+  - name: Set Launch local AGIs through FastAGI Server False
+    ansible.builtin.shell: fwconsole setting LAUNCH_AGI_AS_FASTAGI 0
     args:
       chdir: /root/freepbx
 

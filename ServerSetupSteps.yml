@@ -30,6 +30,7 @@
 - import_playbook: Tasks/InstallCertbot.yml
 - import_playbook: Tasks/InstallApache2.yml
 - import_playbook: Tasks/InstallPhp.yml
+- import_playbook: Tasks/InstallKillAll.yml
 
 - import_playbook: Docker/Mailserver/SetupMailServer.yml
 - import_playbook: Tasks/InstallFail2Ban.yml
@@ -63,6 +64,6 @@
 - import_playbook: Backups/SetupBackups.yml 
 #- import_playbook: Backups/InstallCronJobs.yml 
 
-- import_playbook: Backups/InstallAsterisk.yml 
-#- import_playbook: Backups/InstallFreePBX.yml 
+- import_playbook: Tasks/InstallAsterisk.yml 
+#- import_playbook: Tasks/InstallFreePBX.yml 
 

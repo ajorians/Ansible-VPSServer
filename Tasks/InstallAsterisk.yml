@@ -132,7 +132,7 @@
 
   - name: Check if Asterisk install exists
     stat:
-      path: /sbin/asterisk
+      path: /usr/sbin/asterisk
     register: asteriskinstalled_exists
 
   - name: Make Install Asterisk
