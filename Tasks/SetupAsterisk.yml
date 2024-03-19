@@ -6,46 +6,63 @@
   hosts: all
   tasks:
 
-  - name: Create Asterisk AGI directory
-    ansible.builtin.file:
-      path: /usr/share/asterisk/agi-bin
-      owner: root
-      group: root
-      mode: '0755'
-      state: directory
-
   - name: Math AGI Script
     ansible.builtin.get_url:
       url: http://mediaassets.orians.org/asterisk/math.agi
-      dest: /usr/share/asterisk/agi-bin/math.agi
+      dest: /var/lib/asterisk/agi-bin/math.agi
 
   - name: Change script permissions
     ansible.builtin.file:
       path: /usr/share/asterisk/agi-bin/math.agi
-      owner: root
-      group: root
+      owner: wwwrun
+      group: www
       mode: '0755'
 
   - name: Download Good sound
     ansible.builtin.get_url:
       url: http://mediaassets.orians.org/asterisk/good.wav
-      dest: /usr/share/asterisk/sounds/en/good.wav
+      dest: /var/lib/asterisk/sounds/en/good.wav
 
   - name: Change good permissions
     ansible.builtin.file:
-      path: /usr/share/asterisk/sounds/en/good.wav
-      owner: root
-      group: root
+      path: /var/lib/asterisk/sounds/en/good.wav
+      owner: wwwrun
+      group: www
       mode: '0755'
 
   - name: Download Bad sound
     ansible.builtin.get_url:
       url: http://mediaassets.orians.org/asterisk/bad.wav
-      dest: /usr/share/asterisk/sounds/en/bad.wav
+      dest: /var/lib/asterisk/sounds/en/bad.wav
 
   - name: Change bad permissions
     ansible.builtin.file:
-      path: /usr/share/asterisk/sounds/en/bad.wav
-      owner: root
-      group: root
+      path: /var/lib/asterisk/sounds/en/bad.wav
+      owner: wwwrun
+      group: www
       mode: '0755'
+
+  - name: Download Test Music
+    ansible.builtin.get_url:
+      url: http://mediaassets.orians.org/asterisk/test.mp3
+      dest: /var/lib/asterisk/sounds/en/test.mp3
+
+  - name: Change Test Music permissions
+    ansible.builtin.file:
+      path: /var/lib/asterisk/sounds/en/test.mp3
+      owner: wwwrun
+      group: www
+      mode: '0755'
+
+  - name: Make Custom Extensions file
+    ansible.builtin.copy:
+      dest: /etc/asterisk/extensions_custom.conf
+      content: |
+        ; 6284 is 'math' on touchpad
+        exten => 6284,1,Answer
+        exten => 6284,n,AGI(math.agi)
+        exten => 6284,n,Hangup
+        
+        ; 68742 is 'music' on touchpad
+        exten => 68742,1,Answer()
+        exten => 68742,2,MP3Player(/var/lib/asterisk/sounds/en/test.mp3)
