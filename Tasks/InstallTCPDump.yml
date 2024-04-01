@@ -1,0 +1,14 @@
+# Run with:
+# ansible-playbook InstallTCPDump.yml
+
+---
+- name: Install TCPDump
+  hosts: all
+  tasks:
+
+  - name: Install TCPDump package on OpenSUSE/SUSE Linux
+    zypper:
+      name: tcpdump
+      state: present
+
+
