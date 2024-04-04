@@ -14,13 +14,13 @@
           6434
   tasks:
 
-#Required for ICP FreePBX Module
-  - name: Install icp package on OpenSUSE/SUSE Linux
+#Required for ICU FreePBX Module
+  - name: Install icu package on OpenSUSE/SUSE Linux
     zypper:
-      name: icp
+      name: icu
       state: present
 
-  - name: Install icp-devel package on OpenSUSE/SUSE Linux
+  - name: Install icu-devel package on OpenSUSE/SUSE Linux
     zypper:
       name: libicu-devel
       state: present
@@ -139,7 +139,7 @@
       block: |
         [MySQL]
         Description = ODBC for MySQL (MariaDB)
-        Driver = /usr/lib64/mariadb/libmaodbc.so
+        Driver = /usr/lib64/libmaodbc.so
         FileUsage = 1
 
   - name: Make ODBC INI File
