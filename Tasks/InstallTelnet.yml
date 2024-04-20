@@ -1,0 +1,12 @@
+# Run with:
+# ansible-playbook InstallTelnet.yml
+
+---
+- name: Install Telnet
+  hosts: all
+  tasks:
+
+  - name: Install Telnet package on OpenSUSE/SUSE Linux
+    zypper:
+      name: telnet
+      state: present

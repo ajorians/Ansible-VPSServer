@@ -1,0 +1,18 @@
+# Run with:
+# ansible-playbook InstallNetTools.yml
+
+---
+- name: Install NetTools
+  hosts: all
+  tasks:
+
+  - name: Install netstat package on OpenSUSE/SUSE Linux
+    zypper:
+      name: netstat
+      state: present
+
+# Can do netstat -nlp | grep :25 to find out which process is using port
+  - name: Install net-tools-deprecated package on OpenSUSE/SUSE Linux
+    zypper:
+      name: net-tools-deprecated
+      state: present
