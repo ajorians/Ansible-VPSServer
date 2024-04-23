@@ -1,0 +1,42 @@
+# Run with:
+# ansible-playbook SetupSSL.yml
+
+---
+- name: Setup SSL
+  hosts: all
+  tasks:
+
+  - name: Obtain WWW SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d www.orians.org
+
+  - name: Obtain Jellyfin SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d jellyfin.orians.org
+
+  - name: Obtain Wiki SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d wiki.orians.org
+
+  - name: Obtain Mail certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d mail.orians.org
+
+  - name: Obtain Flood certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d flood.orians.org
+
+  - name: Obtain NextCloud certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d nextcloud.orians.org
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d vpssync.orians.org
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d phpmyadmin.orians.org
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d mediaassets.orians.org
+
+  - name: Obtain SSL certificate
+    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d birthdays.orians.org
+
+  - name: Restart Apache2 service
+    ansible.builtin.systemd:
+      state: restarted
+      name: apache2

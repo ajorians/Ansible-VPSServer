@@ -73,10 +73,3 @@
       state: restarted
       name: apache2
 
-  - name: Obtain SSL certificate
-    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d birthdays.orians.org
-
-  - name: Restart Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
