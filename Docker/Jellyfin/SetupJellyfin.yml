@@ -23,6 +23,7 @@
       - /mnt/allwrite/family
       - /mnt/allwrite/favorites
       - /mnt/allwrite/new
+      - /mnt/allwrite/brittany
       - /root/docker
       - /root/docker/jellyfin
 

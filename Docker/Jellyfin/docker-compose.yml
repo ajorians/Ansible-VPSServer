@@ -16,6 +16,7 @@ services:
       - /mnt/allwrite/family:/data/family
       - /mnt/allwrite/favorites:/data/favorites
       - /mnt/allwrite/new:/data/new
+      - /mnt/allwrite/brittany:/data/brittany
     ports:
       - 9000:8096
       - 9001:8920 #optional
