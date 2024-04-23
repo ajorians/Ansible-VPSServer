@@ -26,6 +26,9 @@ services:
       - ENABLE_FAIL2BAN=1
       - ENABLE_POP3=1
       - SSL_TYPE=letsencrypt
+      # Allow sending emails from other docker containers:
+      # Beware creating an Open Relay: https://docker-mailserver.github.io/docker-mailserver/latest/config/environment/#permit_docker
+      - PERMIT_DOCKER=network
     cap_add:
       - NET_ADMIN # For Fail2Ban to work
     restart: always
@@ -34,3 +37,7 @@ services:
       test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
       timeout: 3s
       retries: 0
+networks:
+  network1:
+    name: my-pre-existing-network
+    external: true
