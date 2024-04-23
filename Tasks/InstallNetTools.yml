@@ -6,9 +6,9 @@
   hosts: all
   tasks:
 
-  - name: Install netstat package on OpenSUSE/SUSE Linux
+  - name: Install net-tools package on OpenSUSE/SUSE Linux
     zypper:
-      name: netstat
+      name: net-tools
       state: present
 
 # Can do netstat -nlp | grep :25 to find out which process is using port
