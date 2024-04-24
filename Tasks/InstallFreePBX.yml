@@ -25,6 +25,11 @@
       name: libicu-devel
       state: present
 
+  - name: Install sox package on OpenSUSE/SUSE Linux
+    zypper:
+      name: sox
+      state: present
+
   - name: Check if FreePBX source exists
     stat:
       path: /root/freepbx
@@ -218,6 +223,14 @@
     ansible.builtin.shell: fwconsole ma downloadinstall asterisk-cli webrtc sms
     args:
       chdir: /root/freepbx
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /srv/www/htdocs/freepbx/admin/assets
+      recurse: true
+      owner: wwwrun
+      group: wwwrun
+      mode: '0775'
 
   - name: Reload Again
     ansible.builtin.shell: fwconsole reload

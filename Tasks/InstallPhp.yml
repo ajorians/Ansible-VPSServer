@@ -6,12 +6,18 @@
   hosts: all
   tasks:
 
-  - name: Install Php 8 package on OpenSUSE/SUSE Linux
+  - name: Add PHP repository
+    community.general.zypper_repository:
+      repo: 'https://download.opensuse.org/repositories/devel:/languages:/php/openSUSE_Leap_15.5/devel:languages:php.repo'
+      auto_import_keys: true
+      runrefresh: true
+
+  - name: Install Php 8.2 package on OpenSUSE/SUSE Linux
     zypper:
       name: php8
       state: present
 
-  - name: Install Php 8 extension packages on OpenSUSE/SUSE Linux
+  - name: Install Php 8.2 extension packages on OpenSUSE/SUSE Linux
     zypper:
       state: present
       name:
