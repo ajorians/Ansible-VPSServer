@@ -27,7 +27,7 @@
 
   - name: Download Semantic Rating extension
     ansible.builtin.get_url:
-      url: https://extdist.wmflabs.org/dist/extensions/SemanticRating-REL1_39-1b5e0fe.tar.gz
+      url: https://extdist.wmflabs.org/dist/extensions/SemanticRating-REL1_39-d3d6453.tar.gz
       dest: /srv/www/htdocs/mediawiki-1.39.3/extensions/SemanticRating.tar.gz
     when: semanticrating_exists.stat.exists == false
 

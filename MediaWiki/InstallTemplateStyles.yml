@@ -27,7 +27,7 @@
 
   - name: Download Template Styles extension
     ansible.builtin.get_url:
-      url: https://extdist.wmflabs.org/dist/extensions/TemplateStyles-REL1_39-e64335a.tar.gz
+      url: https://extdist.wmflabs.org/dist/extensions/TemplateStyles-REL1_39-97462d9.tar.gz
       dest: /srv/www/htdocs/mediawiki-1.39.3/extensions/TemplateStyles.tar.gz
     when: templatestyles_exists.stat.exists == false
 
