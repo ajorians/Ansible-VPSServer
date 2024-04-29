@@ -10,6 +10,8 @@
     zypper:
       name: apache2
       state: present
+    notify:
+    - Restart Apache2 service
 
   # Certbot wants this enabled
   - name: Enable the rewrite Apache2 module
@@ -30,12 +32,15 @@
       name: proxy_http
     ignore_errors: yes #BUG will error if already present
 
-  - name: Start Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
-
   - name: Enable Apache2 service
     ansible.builtin.systemd:
       name: apache2
       enabled: yes
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2

@@ -49,3 +49,7 @@
       state: restarted
       name: apache2
 
+  - name: Print how to connect witth Flood
+    ansible.builtin.debug:
+      msg: "RTorrent exposes /opt/DockerSwarmData/rtorrent/rpc.socket so the way
+           the Docker container is setup it would be /socket/rpc.socket"

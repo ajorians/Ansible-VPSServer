@@ -10,12 +10,16 @@
     stat: 
       path: /srv/www/htdocs/phpMyAdmin-5.2.1-all-languages
     register: phpmyadmin_exists
+    notify:
+    - Restart Apache2 service
 
   - name: Download PhpMyAdmin Release
     ansible.builtin.get_url:
       url: https://files.phpmyadmin.net/phpMyAdmin/5.2.1/phpMyAdmin-5.2.1-all-languages.zip
       dest: /srv/www/htdocs/phpmyadmin.zip
     when: phpmyadmin_exists.stat.exists == false
+    notify:
+    - Restart Apache2 service
 
   - name: Extract PhpMyAdmin Release
     ansible.builtin.unarchive:
@@ -23,6 +27,8 @@
       dest: /srv/www/htdocs
       remote_src: yes
     when: phpmyadmin_exists.stat.exists == false
+    notify:
+    - Restart Apache2 service
 
   - name: Make Apache VHost file
     ansible.builtin.copy:
@@ -39,9 +45,12 @@
               AllowOverride All
            </Directory>
          </VirtualHost>
+    notify:
+    - Restart Apache2 service
 
-  - name: Restart Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
 

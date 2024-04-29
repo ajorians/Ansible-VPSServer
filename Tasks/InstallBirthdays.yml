@@ -16,24 +16,32 @@
       repo: https://github.com/ajorians/birthdays
       dest: /srv/www/htdocs/birthdays
     when: birthdays_exists.stat.exists == false
+    notify:
+    - Restart Apache2 service
 
   - name: Configure username
     ansible.builtin.lineinfile:
       path: /srv/www/htdocs/birthdays/src/index.php
       regexp: '^\$username ='
       line: '$username = "birthdaysuser";'
+    notify:
+    - Restart Apache2 service
 
   - name: Configure password
     ansible.builtin.lineinfile:
       path: /srv/www/htdocs/birthdays/src/index.php
       regexp: '^\$password ='
       line: '$password = "birthdayspassword";'
+    notify:
+    - Restart Apache2 service
 
   - name: Configure database
     ansible.builtin.lineinfile:
       path: /srv/www/htdocs/birthdays/src/index.php
       regexp: '^\$dbname ='
       line: '$dbname = "birthdays";'
+    notify:
+    - Restart Apache2 service
 
   - name: Create Database
     community.mysql.mysql_db:
@@ -41,6 +49,8 @@
       name:
         - birthdays
       state: present
+    notify:
+    - Restart Apache2 service
 
   - name: Grant user access
     community.mysql.mysql_user:
@@ -51,6 +61,8 @@
       password: birthdayspassword 
       priv:
         'birthdays.*': 'ALL,GRANT'
+    notify:
+    - Restart Apache2 service
 
   - name: Make Apache VHost file
     ansible.builtin.copy:
@@ -67,9 +79,12 @@
               AllowOverride All
            </Directory>
          </VirtualHost>
+    notify:
+    - Restart Apache2 service
 
-  - name: Restart Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
 
