@@ -11,7 +11,19 @@
       path: /home/ajorians/Documents/git/BackupScripts
     register: backupscripts_exists
 
+  - name: Create git directory
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /home/ajorians/Documents/git
+
   - name: Checkout from github
+    become: yes
+    become_user: ajorians
     ansible.builtin.git:
       repo: https://github.com/ajorians/BackupScripts
       dest: /home/ajorians/Documents/git/BackupScripts
