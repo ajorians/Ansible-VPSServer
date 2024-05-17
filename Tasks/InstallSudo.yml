@@ -1,0 +1,14 @@
+# Run with:
+# ansible-playbook InstallSudo.yml
+
+---
+- name: Install Sudo
+  hosts: all
+  tasks:
+
+  - name: Install sudo package on OpenSUSE/SUSE Linux
+    zypper:
+      name: sudo
+      state: present
+
+
