@@ -5,6 +5,7 @@
 - import_playbook: Tasks/SetTimeZone.yml
 - import_playbook: Tasks/CreateAJOriansUser.yml
 - import_playbook: Tasks/ZypperUpdate.yml
+- import_playbook: Tasks/InstallSudo.yml
 - import_playbook: Tasks/InstallDocker.yml
 - import_playbook: Tasks/InstallGit.yml
 - import_playbook: Tasks/SetupGitCredentials.yml
@@ -12,7 +13,6 @@
 - import_playbook: Tasks/SetupMariaDB.yml
 - import_playbook: Tasks/InstallMLocate.yml
 - import_playbook: Tasks/InstallFtop.yml
-- import_playbook: Tasks/InstallSudo.yml
 
 - import_playbook: Tasks/InstallGCC.yml
 - import_playbook: Tasks/InstallMake.yml
