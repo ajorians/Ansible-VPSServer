@@ -15,12 +15,12 @@
       group: users
       mode: 0777
     loop:
-      - /mnt/DockerSwarmData/resiliosync
-      - /mnt/DockerSwarmData/resiliosync/config
-      - /mnt/DockerSwarmData/resiliosync/downloads
+      - /opt/DockerSwarmData/resiliosync
+      - /opt/DockerSwarmData/resiliosync/config
+      - /opt/DockerSwarmData/resiliosync/downloads
       - /root/docker
       - /root/docker/resiliosync
-      - /mnt/backups
+      - /mnt/sync
 
   - name: Copy the docker-compose file with owner and permissions
     ansible.builtin.copy:
@@ -31,7 +31,7 @@
       mode: 0777
 
   - name: Deploy Resilio-Sync from a compose file
-    docker_compose:
+    community.docker.docker_compose_v2:
       project_src: /root/docker/resiliosync
 
   - name: Make Apache VHost file

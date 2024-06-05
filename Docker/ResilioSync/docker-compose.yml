@@ -10,7 +10,7 @@ services:
     volumes:
       - /opt/DockerSwarmData/resiliosync/config:/config
       - /opt/DockerSwarmData/resiliosync/downloads:/downloads
-      - /mnt/backups:/sync
+      - /mnt/sync:/sync
     ports:
       - 9200:8888
       - 9201:55555
