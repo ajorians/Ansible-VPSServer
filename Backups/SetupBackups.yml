@@ -14,7 +14,7 @@
       group: users
       mode: 0777
     loop:
-      - /mnt/backups
+      - /mnt/sync/backups
       - /mnt/backups/mailserver
 
   - name: Copy the copy script file with owner and permissions
