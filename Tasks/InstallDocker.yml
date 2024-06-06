@@ -10,30 +10,39 @@
     zypper:
       name: docker
       state: present
+    notify:
+    - Restart Docker service
 
   - name: Install docker-compose package on OpenSUSE/SUSE Linux
     zypper:
       name: docker-compose
       state: present
+    notify:
+    - Restart Docker service
 
   # Was needed for Docker Swarm
   - name: Install Python modules for docker package on OpenSUSE/SUSE Linux
     zypper:
       name: python*-docker
       state: present
+    notify:
+    - Restart Docker service
 
   # Was needed for Docker Swarm Deploy
   - name: Install JSON Diff for docker package on OpenSUSE/SUSE Linux
     zypper:
       name: python*-jsondiff
       state: present
+    notify:
+    - Restart Docker service
 
   - name: Enable Docker service
     ansible.builtin.systemd:
       name: docker
       enabled: yes
 
-  - name: Start Docker service
-    ansible.builtin.systemd:
-      state: restarted
-      name: docker
+  handlers:
+    - name: Restart Docker service
+      ansible.builtin.systemd:
+        state: restarted
+        name: docker
