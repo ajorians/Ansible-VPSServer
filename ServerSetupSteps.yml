@@ -2,6 +2,9 @@
 # ansible-playbook -i inventory.ini ServerSetupSteps.yml --ask-vault-pass
 
 ---
+- hosts: all
+
+- import_playbook: Tasks/DebugSettings.yml
 - import_playbook: Tasks/SetTimeZone.yml
 - import_playbook: Tasks/CreateAJOriansUser.yml
 - import_playbook: Tasks/ZypperUpdate.yml
