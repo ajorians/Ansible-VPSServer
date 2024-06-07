@@ -5,6 +5,8 @@
 ---
 - name: Setup NextCloud
   hosts: all
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
 
   - name: Create directory for data
