@@ -49,8 +49,8 @@
         <VirtualHost *:80>
           ServerName jellyfin.orians.org
           ServerAlias jellyfin.stage.orians.org jellyfin
-          ProxyPass / http://127.0.0.1:9000/
-          ProxyPassReverse / http://127.0.0.1:9000/
+          ProxyPass / http://127.0.0.1:8096/
+          ProxyPassReverse / http://127.0.0.1:8096/
         </VirtualHost>
 
   - name: Restart Apache2 service

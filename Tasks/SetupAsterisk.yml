@@ -13,7 +13,7 @@
 
   - name: Change script permissions
     ansible.builtin.file:
-      path: /usr/share/asterisk/agi-bin/math.agi
+      path: /var/lib/asterisk/agi-bin/math.agi
       owner: wwwrun
       group: www
       mode: '0755'
@@ -54,15 +54,3 @@
       group: www
       mode: '0755'
 
-  - name: Make Custom Extensions file
-    ansible.builtin.copy:
-      dest: /etc/asterisk/extensions_custom.conf
-      content: |
-        ; 6284 is 'math' on touchpad
-        exten => 6284,1,Answer
-        exten => 6284,n,AGI(math.agi)
-        exten => 6284,n,Hangup
-        
-        ; 68742 is 'music' on touchpad
-        exten => 68742,1,Answer()
-        exten => 68742,2,MP3Player(/var/lib/asterisk/sounds/en/test.mp3)
