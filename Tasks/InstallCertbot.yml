@@ -9,7 +9,7 @@
   - name: Add Leap 15.4 Snappy repo and add its gpg key
     community.general.zypper_repository:
       name: snappy
-      repo: 'https://download.opensuse.org/repositories/system:/snappy/openSUSE_Leap_15.4'
+      repo: 'https://download.opensuse.org/repositories/system:/snappy/openSUSE_Leap_15.5'
       state: present
       auto_import_keys: true
 
