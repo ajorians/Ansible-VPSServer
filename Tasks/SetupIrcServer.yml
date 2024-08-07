@@ -6,6 +6,30 @@
   hosts: all
   tasks:
 
+  - name: Check if configuration file exists
+    stat:
+      path: /etc/inspircd/inspircd.conf
+    register: ircconfiguration_exists
+
+  - name: Check if modules configuration file exists
+    stat:
+      path: /etc/inspircd/modules.conf
+    register: ircmodules_exists
+
+  - name: Copy example configuration file
+    ansible.builtin.copy:
+      remote_src: true
+      src: /etc/inspircd/inspircd.example.conf
+      dest: /etc/inspircd/inspircd.conf
+    when: ircconfiguration_exists.stat.exists == false
+
+  - name: Copy example modules file
+    ansible.builtin.copy:
+      remote_src: true
+      src: /etc/inspircd/modules.example.conf
+      dest: /etc/inspircd/modules.conf
+    when: ircmodules_exists.stat.exists == false
+
   - name: Uncomment Server Line
     lineinfile:
       state: present
