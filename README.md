@@ -13,3 +13,5 @@ zypper install python3
 Being OpenSuse Leap; I did upgrade to latest Leap version:
 https://en.opensuse.org/SDB:System_upgrade
 
+Running I run this command:
+ansible-playbook -i inventory.ini ServerSetupSteps.yml --limit 'vps-servers' --ask-vault-pass
