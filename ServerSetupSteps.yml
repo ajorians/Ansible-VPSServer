@@ -39,6 +39,7 @@
 - import_playbook: Tasks/InstallTCPDump.yml
 - import_playbook: Tasks/InstallTelnet.yml
 - import_playbook: Tasks/InstallNetTools.yml
+- import_playbook: Tasks/InstallChromium.yml
 
 - import_playbook: Docker/Mailserver/SetupMailServer.yml
 - import_playbook: Tasks/InstallFail2Ban.yml
