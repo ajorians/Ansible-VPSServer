@@ -10,10 +10,13 @@
     community.docker.docker_compose_v2:
       project_src: /root/docker/mailserver
       pull: always
+    notify:
+    - Restart MailServer
 
-  - name: Restart MailServer
-    community.docker.docker_compose_v2:
-      project_src: /root/docker/mailserver
-      state: restarted
+  handlers:
+    - name: Restart MailServer
+      community.docker.docker_compose_v2:
+        project_src: /root/docker/mailserver
+        state: restarted
 
 

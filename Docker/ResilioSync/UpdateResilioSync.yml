@@ -10,10 +10,13 @@
     community.docker.docker_compose_v2:
       project_src: /root/docker/resiliosync
       pull: always
+    notify:
+    - Restart ResilioSync
 
-  - name: Restart ResilioSync
-    community.docker.docker_compose_v2:
-      project_src: /root/docker/resiliosync
-      state: restarted
+  handlers:
+    - name: Restart ResilioSync
+      community.docker.docker_compose_v2:
+        project_src: /root/docker/resiliosync
+        state: restarted
 
 

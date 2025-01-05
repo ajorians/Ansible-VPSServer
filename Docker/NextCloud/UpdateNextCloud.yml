@@ -6,14 +6,17 @@
   hosts: all
   tasks:
 
-  - name: Pull Latest Nextcloud
+  - name: Pull Latest NextCloud
     community.docker.docker_compose_v2:
       project_src: /root/docker/nextcloud
       pull: always
+    notify:
+    - Restart NextCloud
 
-  - name: Restart NextCloud
-    community.docker.docker_compose_v2:
-      project_src: /root/docker/nextcloud
-      state: restarted
+  handlers:
+    - name: Restart NextCloud
+      community.docker.docker_compose_v2:
+        project_src: /root/docker/nextcloud
+        state: restarted
 
 

@@ -10,10 +10,13 @@
     community.docker.docker_compose_v2:
       project_src: /root/docker/flood
       pull: always
+    notify:
+    - Restart Flood
 
-  - name: Restart Flood
-    community.docker.docker_compose_v2:
-      project_src: /root/docker/flood
-      state: restarted
+  handlers:
+    - name: Restart Flood
+      community.docker.docker_compose_v2:
+        project_src: /root/docker/flood
+        state: restarted
 
 
