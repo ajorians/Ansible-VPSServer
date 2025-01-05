@@ -1,0 +1,13 @@
+# Run with:
+# ansible-playbook InstallChromium.yml
+
+---
+- name: Install Chromium
+  hosts: all
+  tasks:
+
+  - name: Install Chromium
+    zypper:
+       name: chromium
+       state: present
+

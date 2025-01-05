@@ -1,0 +1,19 @@
+# Run with
+# ansible-playbook UpdateJellyfin.yml
+
+---
+- name: Update Jellyfin Container
+  hosts: all
+  tasks:
+
+  - name: Pull Latest Jellyfin
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/jellyfin
+      pull: always
+
+  - name: Restart Jellyfin
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/jellyfin
+      state: restarted
+
+

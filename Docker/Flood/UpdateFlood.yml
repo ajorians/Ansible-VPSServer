@@ -1,0 +1,19 @@
+# Run with
+# ansible-playbook UpdateFlood.yml
+
+---
+- name: Update Flood Container
+  hosts: all
+  tasks:
+
+  - name: Pull Latest Flood
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/flood
+      pull: always
+
+  - name: Restart Flood
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/flood
+      state: restarted
+
+

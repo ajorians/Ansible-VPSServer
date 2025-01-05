@@ -1,0 +1,19 @@
+# Run with
+# ansible-playbook UpdateResilioSync.yml
+
+---
+- name: Update ResilioSync Container
+  hosts: all
+  tasks:
+
+  - name: Pull Latest ResilioSync
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/resiliosync
+      pull: always
+
+  - name: Restart ResilioSync
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/resiliosync
+      state: restarted
+
+

@@ -1,0 +1,19 @@
+# Run with
+# ansible-playbook UpdateMailServer.yml
+
+---
+- name: Update MailServer Container
+  hosts: all
+  tasks:
+
+  - name: Pull Latest MailSever
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/mailserver
+      pull: always
+
+  - name: Restart MailServer
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/mailserver
+      state: restarted
+
+

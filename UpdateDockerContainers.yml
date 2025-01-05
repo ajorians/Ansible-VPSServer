@@ -1,0 +1,12 @@
+# Run with:
+# ansible-playbook -i inventory.ini UpdateDockerContainers.yml
+
+---
+- hosts: all
+
+- import_playbook: Docker/Flood/UpdateFlood.yml
+- import_playbook: Docker/Jellyfin/UpdateJellyfin.yml
+- import_playbook: Docker/MailServer/UpdateMailServer.yml
+- import_playbook: Docker/NextCloud/UpdateNextCloud.yml
+- import_playbook: Docker/ResilioSync/UpdateResilioSync.yml
+
