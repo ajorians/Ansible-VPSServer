@@ -56,16 +56,16 @@
       chdir: /home/ajorians/Documents/git/FreePBXSetup
       cmd: git reset --hard
 
-  - name: Set Server
+  - name: Set Server in Variables File
     become: yes
     become_user: ajorians
     lineinfile:
       state: present
-      dest: //home/ajorians/Documents/git/FreePBXSetup/variables.ts
+      dest: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
       regexp: 'export const server = "https://asteriskpi.orians.org/";'
       line: 'export const server = "http://freepbx.orians.org/";'
 
-  - name: Set Password
+  - name: Set FreePBX Password in Variables File
     become: yes
     become_user: ajorians
     lineinfile:
@@ -74,32 +74,30 @@
       regexp: 'export const password = "changemeaj";'
       line: 'export const password = "{{FreePBXPass}}";'
 
-  - name: Set Trunk Account
-    become: yes
-    become_user: ajorians
-    lineinfile:
-      state: present
-      dest: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
-      regexp: 'export const trunkaccount = "trunkaccount";'
-      line: 'export const trunkaccount = "{{TrunkAccount}}";'
+  - name: Insert Trunks to Variables File
+    ansible.builtin.blockinfile:
+      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
+      insertafter: "export const siptrunks = "
+      marker: "// {mark} Trunks ANSIBLE MANAGED BLOCK"
+      block: |
+        ["Voip.ms", "chicago4.voip.ms", "{{TrunkNumber}}", "{{TrunkAccount}}", "{{TrunkPassword}}" ]
 
-  - name: Set Trunk Number
-    become: yes
-    become_user: ajorians
-    lineinfile:
-      state: present
-      dest: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
-      regexp: 'export const trunknumber = "trunknumber";'
-      line: 'export const trunknumber = "{{TrunkNumber}}";'
+#  - name: Insert Extensions to Variables File
+#    ansible.builtin.blockinfile:
+#      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
+#      insertafter: "export const deviceextensions = "
+#      marker: "// {mark} Extension ANSIBLE MANAGED BLOCK"
+#      block: |
+#        ["201", "Desktop", "abc"]
+#        ["202", "A.J. IPhone", "abc"]
 
-  - name: Set Trunk Password
-    become: yes
-    become_user: ajorians
-    lineinfile:
-      state: present
-      dest: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
-      regexp: 'export const trunkpassword = "trunkpassword";'
-      line: 'export const trunkpassword = "{{TrunkPassword}}";'
+#  - name: Insert Ring Groups to Variables File
+#    ansible.builtin.blockinfile:
+#      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
+#      insertafter: "export const ringgroups = "
+#      marker: "// {mark} RingGroup ANSIBLE MANAGED BLOCK"
+#      block: |
+#        ["290", "Test Ring Group", ["201", "202"] ]
 
   - name: Install "Puppeteer" node.js package.
     become: yes

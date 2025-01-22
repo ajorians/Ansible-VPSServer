@@ -76,6 +76,7 @@
 - import_playbook: Tasks/InstallAsterisk.yml
 - import_playbook: Tasks/SetupAsterisk.yml 
 - import_playbook: Tasks/InstallFreePBX.yml 
+- import_playbook: Tasks/SetupFreePBX.yml 
 
 - import_playbook: SetupSSL.yml
 
