@@ -41,7 +41,7 @@
 - import_playbook: Tasks/InstallNetTools.yml
 - import_playbook: Tasks/InstallChromium.yml
 
-- import_playbook: Docker/Mailserver/SetupMailServer.yml
+- import_playbook: Docker/MailServer/SetupMailServer.yml
 - import_playbook: Tasks/InstallFail2Ban.yml
 - import_playbook: Tasks/InstallMailClients.yml
 
