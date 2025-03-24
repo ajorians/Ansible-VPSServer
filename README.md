@@ -15,3 +15,6 @@ https://en.opensuse.org/SDB:System_upgrade
 
 Running I run this command:
 ansible-playbook -i inventory.ini ServerSetupSteps.yml --limit 'vps-servers' --ask-vault-pass
+
+To Update Docker containers:
+ansible-playbook -i inventory.ini UpdateDockerContainers.yml
