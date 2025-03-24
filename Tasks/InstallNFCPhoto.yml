@@ -1,0 +1,96 @@
+# Run with:
+# ansible-playbook InstallNFCPhoto.yml
+
+---
+- name: Setup NFC Photo Site
+  hosts: all
+  tasks:
+
+  - name: check if NFCPhoto exists
+    stat: 
+      path: /srv/www/htdocs/NFCPhoto
+    register: nfcphoto_exists
+
+  - name: Checkout from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/NFCPhoto
+      dest: /srv/www/htdocs/NFCPhoto
+    when: nfcphoto_exists.stat.exists == false
+    notify:
+    - Restart Apache2 service
+
+  - name: Update from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/NFCPhoto
+      dest: /srv/www/htdocs/NFCPhoto
+      update: true
+
+  - name: Configure username
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/NFCPhoto/src/index.php
+      regexp: '^\$username ='
+      line: '$username = "nfcphotouser";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Configure password
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/NFCPhoto/src/index.php
+      regexp: '^\$password ='
+      line: '$password = "nfcphotopassword";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Configure database
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/NFCPhoto/src/index.php
+      regexp: '^\$dbname ='
+      line: '$dbname = "nfcphoto";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - nfcphoto
+      state: present
+    notify:
+    - Restart Apache2 service
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: nfcphotouser
+      host: 'localhost'
+      password: nfcphotopassword 
+      priv:
+        'nfcphoto.*': 'ALL,GRANT'
+    notify:
+    - Restart Apache2 service
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/nfcphoto.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/NFCPhoto/src
+           ServerName nfcphoto.orians.org
+           ServerAlias nfcphoto.orians.org
+           <Directory /srv/www/htdocs/NFCPhoto/src>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+

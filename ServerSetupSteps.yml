@@ -65,6 +65,8 @@
 
 - import_playbook: Tasks/InstallBirthdays.yml 
 - import_playbook: Tasks/InstallPhpMyAdmin.yml 
+- import_playbook: Tasks/InstallScavengerHunt.yml 
+- import_playbook: Tasks/InstallNFCPhoto.yml 
 
 - import_playbook: Tasks/InstallInspircd.yml 
 - import_playbook: Tasks/SetupIrcServer.yml
