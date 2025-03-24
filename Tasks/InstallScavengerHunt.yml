@@ -1,0 +1,96 @@
+# Run with:
+# ansible-playbook InstallScavenger.yml
+
+---
+- name: Setup Scavenger Hunt Site
+  hosts: all
+  tasks:
+
+  - name: check if ScavengerHunt exists
+    stat: 
+      path: /srv/www/htdocs/scavengerhunt
+    register: scavengerhunt_exists
+
+  - name: Checkout from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/scavengerhunt
+      dest: /srv/www/htdocs/scavengerhunt
+    when: scavengerhunt_exists.stat.exists == false
+    notify:
+    - Restart Apache2 service
+
+  - name: Update from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/scavengerhunt
+      dest: /srv/www/htdocs/scavengerhunt
+      update: true
+
+  - name: Configure username
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/scavengerhunt/src/index.php
+      regexp: '^\$username ='
+      line: '$username = "scavengeruser";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Configure password
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/scavengerhunt/src/index.php
+      regexp: '^\$password ='
+      line: '$password = "scavengerpassword";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Configure database
+    ansible.builtin.lineinfile:
+      path: /srv/www/htdocs/scavengerhunt/src/index.php
+      regexp: '^\$dbname ='
+      line: '$dbname = "scavengerhunt";'
+    notify:
+    - Restart Apache2 service
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - scavengerhunt
+      state: present
+    notify:
+    - Restart Apache2 service
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: scavengeruser
+      host: 'localhost'
+      password: scavengerpassword 
+      priv:
+        'scavengerhunt.*': 'ALL,GRANT'
+    notify:
+    - Restart Apache2 service
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/scavengerhunt.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/scavengerhunt/src
+           ServerName scavengerhunt.orians.org
+           ServerAlias scavengerhunt.orians.org
+           <Directory /srv/www/htdocs/scavengerhunt/src>
+              Options All
+              AllowOverride All
+           </Directory>
+         </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+
