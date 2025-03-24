@@ -17,6 +17,12 @@
       dest: /srv/www/htdocs/mediaassets
     when: mediaassets_exists.stat.exists == false
 
+  - name: Update from github
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/mediaassets
+      dest: /srv/www/htdocs/mediaassets
+      update: true
+
   - name: Make Apache VHost file
     ansible.builtin.copy:
       dest: /etc/apache2/vhosts.d/mediaassets.conf
