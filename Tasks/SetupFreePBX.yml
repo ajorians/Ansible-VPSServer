@@ -34,6 +34,13 @@
           64613866666364613334663336393335363432643639313362653335666163623035343333323130
           6635353137623535350a356132656534613033343437323862646439316338333534626432353764
           6531
+    ExtensionPass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65663138623832366261313263623964653932666434353033656666316665303364613561323331
+          3265383063343836633166353139623965613931373162300a383539313635323436323430303837
+          65663734636462316438353935326362663936646533663266623734356531393561346530653533
+          3066613931613635350a313836313963386430333439623765623533363666336463373035386330
+          6530
   tasks:
 
   - name: check if FreePBXSetup exists
@@ -41,20 +48,21 @@
       path: /home/ajorians/Documents/git/FreePBXSetup
     register: freepbxsetup_exists
 
-  - name: Checkout from github
-    become: yes
-    become_user: ajorians
-    ansible.builtin.git:
-      repo: https://github.com/ajorians/FreePBXSetup
-      dest: /home/ajorians/Documents/git/FreePBXSetup
-    when: freepbxsetup_exists.stat.exists == false
-
   - name: Git Reset
     become: yes
     become_user: ajorians
     shell:
       chdir: /home/ajorians/Documents/git/FreePBXSetup
       cmd: git reset --hard
+    when: freepbxsetup_exists.stat.exists == true
+
+  - name: Checkout from github
+    become: yes
+    become_user: ajorians
+    ansible.builtin.git:
+      repo: https://github.com/ajorians/FreePBXSetup
+      dest: /home/ajorians/Documents/git/FreePBXSetup
+      update: yes
 
   - name: Set Server in Variables File
     become: yes
@@ -82,22 +90,22 @@
       block: |
         ["Voip.ms", "chicago4.voip.ms", "{{TrunkNumber}}", "{{TrunkAccount}}", "{{TrunkPassword}}" ]
 
-#  - name: Insert Extensions to Variables File
-#    ansible.builtin.blockinfile:
-#      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
-#      insertafter: "export const deviceextensions = "
-#      marker: "// {mark} Extension ANSIBLE MANAGED BLOCK"
-#      block: |
-#        ["201", "Desktop", "abc"]
-#        ["202", "A.J. IPhone", "abc"]
+  - name: Insert Extensions to Variables File
+    ansible.builtin.blockinfile:
+      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
+      insertafter: "export const deviceextensions = "
+      marker: "// {mark} Extension ANSIBLE MANAGED BLOCK"
+      block: |
+        ["201", "Desktop", "{{ExtensionPass}}"],
+        ["202", "A.J. IPhone", "{{ExtensionPass}}"]
 
-#  - name: Insert Ring Groups to Variables File
-#    ansible.builtin.blockinfile:
-#      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
-#      insertafter: "export const ringgroups = "
-#      marker: "// {mark} RingGroup ANSIBLE MANAGED BLOCK"
-#      block: |
-#        ["290", "Test Ring Group", ["201", "202"] ]
+  - name: Insert Ring Groups to Variables File
+    ansible.builtin.blockinfile:
+      path: /home/ajorians/Documents/git/FreePBXSetup/variables.ts
+      insertafter: "export const ringgroups = "
+      marker: "// {mark} RingGroup ANSIBLE MANAGED BLOCK"
+      block: |
+        ["290", "Test Ring Group", ["201", "202"] ]
 
   - name: Install "Puppeteer" node.js package.
     become: yes
@@ -111,5 +119,5 @@
     become_user: ajorians
     shell:
        chdir: /home/ajorians/Documents/git/FreePBXSetup
-       cmd: npx tsx index.ts
+       cmd: npx tsx index.js
 

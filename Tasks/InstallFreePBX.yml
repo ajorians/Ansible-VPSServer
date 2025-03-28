@@ -46,11 +46,6 @@
   - name: Adjust script to start as wwwrun user
     ansible.builtin.shell: sed -i 's/-U asterisk -G asterisk/-U wwwrun -G www/' /root/freepbx/start_asterisk
 
-  - name: Stop Apache2 service
-    ansible.builtin.systemd:
-      state: stopped
-      name: apache2
-
   - name: Add the user 'wwwrun' with a bash shell, appending the group 'asterisk' to the user's groups
     ansible.builtin.user:
       name: wwwrun
@@ -136,6 +131,9 @@
       path: /srv/www/htdocs/freepbx
       state: directory
       mode: '0755'
+    notify:
+    - Killall httpd-prefork
+    - Restart Apache2 service
 
 # These were found running odbcinst -j
   - name: Make ODBC File
@@ -146,6 +144,9 @@
         Description = ODBC for MySQL (MariaDB)
         Driver = /usr/lib64/libmaodbc.so
         FileUsage = 1
+    notify:
+    - Killall httpd-prefork
+    - Restart Apache2 service
 
   - name: Make ODBC INI File
     ansible.builtin.blockinfile:
@@ -160,6 +161,9 @@
         Socket=/var/run/mysql/mysql.sock
         option=3
         Charset=utf8
+    notify:
+    - Killall httpd-prefork
+    - Restart Apache2 service
 
   - name: Run Install Script
     ansible.builtin.shell: ./install --dbpass={{databasepasswd}} --webroot=/srv/www/htdocs/freepbx --user=wwwrun --group=www -n
@@ -307,9 +311,17 @@
             AllowOverride All
           </Directory>
         </VirtualHost>
+    notify:
+    - Killall httpd-prefork
+    - Restart Apache2 service
 
-  - name: Start Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
+  handlers:
+    - name: Killall httpd-prefork
+      ansible.builtin.shell: killall httpd-prefork --wait
+      ignore_errors: true # In case there is no process
+
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
 
