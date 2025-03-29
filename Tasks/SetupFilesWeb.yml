@@ -1,0 +1,41 @@
+# Run with:
+# ansible-playbook SetupFilesWeb.yml
+
+---
+- name: Setup Files Web Location
+  hosts: all
+  tasks:
+
+  - name: Make server directory for Files
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: wwwrun
+      group: www
+      mode: 0777
+    loop:
+      - /srv/www/htdocs/files
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/files.conf
+      force: false
+      content: |
+         <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /srv/www/htdocs/files
+           ServerName files.orians.org
+           <Directory /srv/www/htdocs/files>
+             Options All
+             AllowOverride All
+           </Directory>
+         </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+
