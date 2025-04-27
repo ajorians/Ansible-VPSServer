@@ -8,20 +8,22 @@
 
   - name: Add PHP repository
     community.general.zypper_repository:
-      repo: 'https://download.opensuse.org/repositories/devel:/languages:/php/openSUSE_Leap_15.5/devel:languages:php.repo'
+      repo: 'https://download.opensuse.org/repositories/devel:/languages:/php:/php82/openSUSE_Leap_15.6/devel:languages:php:php82.repo'
       auto_import_keys: true
       runrefresh: true
 
   - name: Install Php 8.2 package on OpenSUSE/SUSE Linux
     zypper:
       name: php8
+      repo: devel_languages_php_php82
       state: present
     notify:
     - Restart Apache2 service
 
-  - name: Install Php 8.2 extension packages on OpenSUSE/SUSE Linux
+  - name: Install Php 8.1 extension packages on OpenSUSE/SUSE Linux
     zypper:
       state: present
+      repo: devel_languages_php_php82
       name:
 #        - php8-APCu
         - php8-cli
@@ -53,6 +55,7 @@
   - name: Install Apache2 Php Mod package on OpenSUSE/SUSE Linux
     zypper:
       name: apache2-mod_php8
+      repo: devel_languages_php_php82
       state: present
     notify:
     - Restart Apache2 service

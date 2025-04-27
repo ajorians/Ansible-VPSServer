@@ -43,6 +43,18 @@
       version: release/17.0
     when: freepbx_exists.stat.exists == false
 
+  - name: Git Reset
+    shell:
+      chdir: /root/freepbx
+      cmd: git reset --hard
+    when: freepbx_exists.stat.exists == true
+
+  - name: Update from github
+    ansible.builtin.git:
+      repo: https://github.com/FreePBX/framework.git
+      dest: /root/freepbx
+      update: true
+
   - name: Adjust script to start as wwwrun user
     ansible.builtin.shell: sed -i 's/-U asterisk -G asterisk/-U wwwrun -G www/' /root/freepbx/start_asterisk
 
@@ -108,7 +120,7 @@
       state: absent
     when: freepbxwww_exists.stat.exists == false
 
-  - name: Remove /etc/freepbx.conf
+  - name: Remove /etc/amportal.conf
     ansible.builtin.file:
       path: /etc/amportal.conf
       state: absent

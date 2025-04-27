@@ -64,6 +64,23 @@
       name: unixODBC-devel
       state: present
 
+  - name: Check if Asterisk is installed
+    stat:
+      path: /etc/asterisk
+    register: asterisk_installed
+
+  - name: Remove /usr/local/bin/asterisk
+    ansible.builtin.file:
+      path: /usr/local/bin/asterisk
+      state: absent
+    when: asterisk_installed.stat.exists == false
+
+  - name: Remove /usr/sbin/asterisk
+    ansible.builtin.file:
+      path: /usr/sbin/asterisk
+      state: absent
+    when: asterisk_installed.stat.exists == false
+
   - name: Check if Asterisk download exists
     stat:
       path: /root/{{asterisk_version}}.tar.gz
