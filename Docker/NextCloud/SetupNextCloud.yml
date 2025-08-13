@@ -9,6 +9,29 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
 
+  - name: Check if config file exists
+    stat:
+      path: /opt/DockerSwarmData/nextcloud/config/www/nextcloud/config/config.php
+    register: configphp_exists
+
+#  - name: Stop the Nextcloud container
+#    community.docker.docker_container:
+#      name: nextcloud
+#      state: stopped
+#    when: configphp_exists.stat.exists == false
+
+#  - name: Remove the Nextcloud container
+#    community.docker.docker_container:
+#      name: nextcloud
+#      state: absent
+#    when: configphp_exists.stat.exists == false
+
+#  - name: Delete Nextloud directory and its contents
+#    ansible.builtin.file:
+#      path: /opt/DockerSwarmData/nextcloud
+#      state: absent
+#    when: configphp_exists.stat.exists == false
+
   - name: Create directory for data
     file:
       path: "{{ item }}"
@@ -51,6 +74,39 @@
   - name: Deploy NextCloud from a compose file
     community.docker.docker_compose_v2:
       project_src: /root/docker/nextcloud
+
+  - name: Check if config file exists post install
+    stat:
+      path: /opt/DockerSwarmData/nextcloud/config/www/nextcloud/config/config.php
+    register: configphp_post_exists
+
+  - name: Check if trusted_domains key exists in config.php
+    ansible.builtin.command: grep -q trusted_domains /opt/DockerSwarmData/nextcloud/config/www/nextcloud/config/config.php
+    register: trusted_domains_check
+    failed_when: trusted_domains_check.rc > 1
+    changed_when: false
+    when: configphp_post_exists.stat.exists == true
+
+  - name: Set default for trusted_domains_check if config.php doesn't exist
+    set_fact:
+      trusted_domains_check:
+        rc: 1
+    when: not configphp_post_exists.stat.exists
+
+  - name: Add new trusted domain to Nextcloud config.php
+    lineinfile:
+      path: /opt/DockerSwarmData/nextcloud/config/www/nextcloud/config/config.php
+      insertafter: "0 => '127.0.0.1:5600',"
+      line: "    1 => 'nextcloud.orians.org',"
+    when: trusted_domains_check.rc == 0
+
+  - name: Replace the overwrite.cli.url
+    ansible.builtin.lineinfile:
+      path: /opt/DockerSwarmData/nextcloud/config/www/nextcloud/config/config.php
+      regexp: "^  'overwrite.cli.url' => 'http://127.0.0.1:5600',"
+      line: "  'overwrite.cli.url' => 'https://nextcloud.orians.org',"
+      state: present
+    when: configphp_post_exists.stat.exists == true and trusted_domains_check.rc == 0
 
   - name: Make Apache VHost file
     ansible.builtin.copy:
