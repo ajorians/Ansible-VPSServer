@@ -53,6 +53,12 @@
           ProxyPassReverse / http://127.0.0.1:8096/
         </VirtualHost>
 
+# I got SyncPlay working by adding the following to the SSL config file
+# RewriteCond %{HTTP:Upgrade} =websocket
+# RewriteRule /(.*) ws://127.0.0.1:8096/socket/$1 [P,L]
+# RewriteCond %{HTTP:Upgrade} !=websocket
+# RewriteRule /(.*) http://127.0.0.1:8096/$1 [P,L]
+
   - name: Restart Apache2 service
     ansible.builtin.systemd:
       state: restarted

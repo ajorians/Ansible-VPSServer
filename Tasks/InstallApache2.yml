@@ -32,6 +32,12 @@
       name: proxy_http
     ignore_errors: yes #BUG will error if already present
 
+  - name: Enable the proxy_wstunnel Apache2 module
+    community.general.apache2_module:
+      state: present
+      name: proxy_wstunnel
+    ignore_errors: yes #BUG will error if already present
+
   - name: Enable Apache2 service
     ansible.builtin.systemd:
       name: apache2
