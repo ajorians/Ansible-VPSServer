@@ -4,11 +4,13 @@
 ---
 - name: Set MediaWiki Short URL
   hosts: all
+  vars:
+    mediawiki_version: "1.44.0"
   tasks:
 
   - name: Check if MediaWiki already setup
     stat:
-      path: /srv/www/htdocs/mediawiki-1.39.3/LocalSettings.php
+      path: /srv/www/htdocs/mediawiki-{{mediawiki_version}}/LocalSettings.php
     register: localsettings_exists
 
   - name: Message if MediaWiki not already setup
@@ -23,21 +25,21 @@
   - name: Set WGScriptPath in LocalSettings.php
     lineinfile:
       state: present
-      dest: /srv/www/htdocs/mediawiki-1.39.3/LocalSettings.php
+      dest: /srv/www/htdocs/mediawiki-{{mediawiki_version}}/LocalSettings.php
       regexp: '.wgScriptPath\s*=\s*\"'
       line: '$wgScriptPath = "";'
 
   - name: Set WGArticlePath in LocalSettings.php
     lineinfile:
       state: present
-      dest: /srv/www/htdocs/mediawiki-1.39.3/LocalSettings.php
+      dest: /srv/www/htdocs/mediawiki-{{mediawiki_version}}/LocalSettings.php
       regexp: '.wgArticlePath\s*=\s*\"'
       insertafter:
       line: '$wgArticlePath = "/$1";'
 
   - name: Make .htaccess file
     ansible.builtin.copy:
-      dest: /srv/www/htdocs/mediawiki-1.39.3/.htaccess
+      dest: /srv/www/htdocs/mediawiki-{{mediawiki_version}}/.htaccess
       force: false
       content: |
         RewriteEngine On

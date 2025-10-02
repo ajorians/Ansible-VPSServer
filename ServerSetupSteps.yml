@@ -52,10 +52,10 @@
 - import_playbook: Tasks/InstallVSFTP.yml
 
 - import_playbook: Tasks/SetupMediaAssets.yml
-- import_playbook: MediaWiki/InstallMediaWiki.yml
-- import_playbook: MediaWiki/InstallSemanticRating.yml
-- import_playbook: MediaWiki/SetMediaWikiLogo.yml
-- import_playbook: MediaWiki/InstallTemplateStyles.yml
+- import_playbook: Tasks/MediaWiki/InstallMediaWiki.yml
+- import_playbook: Tasks/MediaWiki/InstallSemanticRating.yml
+- import_playbook: Tasks/MediaWiki/SetMediaWikiLogo.yml
+- import_playbook: Tasks/MediaWiki/InstallTemplateStyles.yml
 
 - import_playbook: Tasks/InstallBackdrop.yml
 
