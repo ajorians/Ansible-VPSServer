@@ -65,7 +65,7 @@
       name: "Snappymail"
       minute: "20"
       hour: "3"
-      job: "/home/ajorians/Documents/git/BackupScripts/Snappymail/BackupSnappymail.sh"
+      job: "/home/ajorians/Documents/git/BackupScripts/Snappymail/BackupSnappyMail.sh"
 
   - name: Backup Nextcloud files
     ansible.builtin.cron:
