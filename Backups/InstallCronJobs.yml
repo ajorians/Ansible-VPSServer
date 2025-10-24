@@ -6,6 +6,16 @@
   hosts: all
   tasks:
 
+  - name: Create directory for backups
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /mnt/sync/backups
+
   - name: check if Backup Scripts exists
     stat:
       path: /home/ajorians/Documents/git/BackupScripts

@@ -73,7 +73,6 @@
 - import_playbook: Tasks/SetupIrcServer.yml
 - import_playbook: Tasks/InstallXMPP.yml 
 
-- import_playbook: Backups/SetupBackups.yml 
 - import_playbook: Backups/InstallCronJobs.yml 
 
 - import_playbook: Tasks/InstallAsterisk.yml
