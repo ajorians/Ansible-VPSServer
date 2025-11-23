@@ -1,0 +1,59 @@
+# Run with
+# ansible-playbook SetupMediaWiki.yml
+# https://www.mediawiki.org/wiki/MediaWiki
+
+---
+- name: Setup MediaWiki
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/mediawiki
+      - /root/docker
+      - /root/docker/mediawiki
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/mediawiki
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Deploy MediaWiki from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/mediawiki
+
+  - name: Print some information
+    ansible.builtin.debug:
+      msg: |
+        If you don't already have a LocalSettings.php file a directory is created and you'll need to
+        fix it.  You can comment out the lines in the docker-compose.yml file to get setup and then
+        download the LocalSettings.php file.
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/mediawiki.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName wiki.orians.org
+          ServerAlias wiki mediawiki.orians.org mediawiki wiki.local newwiki.local
+          ProxyPass / http://127.0.0.1:9000/
+          ProxyPassReverse / http://127.0.0.1:9000/
+        </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
