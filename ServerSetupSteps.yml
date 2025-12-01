@@ -72,6 +72,7 @@
 - import_playbook: Tasks/InstallNFCPhoto.yml 
 - import_playbook: Tasks/SetupFilesWeb.yml 
 
+- import_playbook: Docker/Ngircd/SetupNgircd.yml
 #- import_playbook: Tasks/InstallInspircd.yml 
 #- import_playbook: Tasks/SetupIrcServer.yml
 #- import_playbook: Tasks/InstallXMPP.yml 

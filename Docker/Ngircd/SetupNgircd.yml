@@ -1,0 +1,49 @@
+# Run with
+# ansible-playbook SetupNgircd.yml
+# https://ngircd.barton.de/
+
+---
+- name: Setup NGIRCD
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/ngircd
+      - /opt/DockerSwarmData/ngircd/config
+      - /root/docker
+      - /root/docker/ngircd
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/ngircd
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Deploy NGIRCD from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/ngircd
+
+  - name: Replace Global Server name
+    ansible.builtin.lineinfile:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: "Name = irc.example.net"
+      line: "Name = irc.orians.org"
+      state: present
+
+  - name: Replace Global Server Info
+    ansible.builtin.lineinfile:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: "Info = Server Info Text"
+      line: "Info = Orians IRC"
+      state: present
+
+
