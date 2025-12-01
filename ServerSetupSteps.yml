@@ -72,14 +72,14 @@
 - import_playbook: Tasks/InstallNFCPhoto.yml 
 - import_playbook: Tasks/SetupFilesWeb.yml 
 
-- import_playbook: Tasks/InstallInspircd.yml 
-- import_playbook: Tasks/SetupIrcServer.yml
-- import_playbook: Tasks/InstallXMPP.yml 
+#- import_playbook: Tasks/InstallInspircd.yml 
+#- import_playbook: Tasks/SetupIrcServer.yml
+#- import_playbook: Tasks/InstallXMPP.yml 
 
 - import_playbook: Backups/InstallCronJobs.yml 
 
 - import_playbook: Tasks/InstallAsterisk.yml
-- import_playbook: Tasks/SetupAsterisk.yml 
+- import_playbook: Tasks/SetupAsterisk.yml
 - import_playbook: Tasks/InstallFreePBX.yml 
 - import_playbook: Tasks/SetupFreePBX.yml 
 

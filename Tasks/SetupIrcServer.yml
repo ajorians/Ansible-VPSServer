@@ -41,50 +41,51 @@
     lineinfile:
       state: present
       dest: /etc/inspircd/inspircd.conf
-      regexp: '^#         name="penguin.omega.example.org"'
+      regexp: '^#         name="irc.&networkDomain;"'
       line: '         name="irc.orians.org"'
 
   - name: Set Server Description
     lineinfile:
       state: present
       dest: /etc/inspircd/inspircd.conf
-      regexp: '^#         description="Waddle World"'
+      regexp: '^#         description="&networkName; IRC server"'
       line: '         description="Orians IRC"'
 
   - name: Set Server Network Name
     lineinfile:
       state: present
       dest: /etc/inspircd/inspircd.conf
-      regexp: '^#         network="Omega">'
+      regexp: '^#         network="&networkName;">'
       line: '         network="orians">'
 
-  - name: Set Admin
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^#<admin'
-      line: '<admin'
-
-  - name: Set Admin Name
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^#       name="Johnny English"'
-      line: '       name="A.J. Orians"'
-
-  - name: Set Admin Nickname
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^#       nick="MI5"'
-      line: '       nick="ajorians"'
-
-  - name: Set Admin EMail
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^#       email="MI5@the.best.secret.agent">'
-      line: '       email="ajorians@gmail.com">'
+#Needs updating
+#  - name: Set Admin
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^#<admin'
+#      line: '<admin'
+#
+#  - name: Set Admin Name
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^#       name="Johnny English"'
+#      line: '       name="A.J. Orians"'
+#
+#  - name: Set Admin Nickname
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^#       nick="MI5"'
+#      line: '       nick="ajorians"'
+#
+#  - name: Set Admin EMail
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^#       email="MI5@the.best.secret.agent">'
+#      line: '       email="ajorians@gmail.com">'
 
   - name: Set gnutls in modules file
     lineinfile:
@@ -110,31 +111,31 @@
       line: '<bind address="" port="6697" type="clients" sslprofile="gnutls">'
 
   # I think rules isn't supported so removing that attribute
-  - name: Close Files tag
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^<files motd="&confdir;motd.txt"'
-      line: '<files motd="motd.txt">'
+#  - name: Close Files tag
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^<files motd="&confdir;motd.txt"'
+#      line: '<files motd="motd.txt">'
 
-  - name: Comment out rules attribute
-    lineinfile:
-      state: present
-      dest: /etc/inspircd/inspircd.conf
-      regexp: '^       rules="&confdir;rules.txt">'
-      line: '#       rules="&confdir;rules.txt">'
+#  - name: Comment out rules attribute
+#    lineinfile:
+#      state: present
+#      dest: /etc/inspircd/inspircd.conf
+#      regexp: '^       rules="&confdir;rules.txt">'
+#      line: '#       rules="&confdir;rules.txt">'
 
   # Not sure why &confdir; exists if not defined
-  - name: Replace all &confdir;
-    ansible.builtin.replace:
-      path: /etc/inspircd/inspircd.conf
-      regexp: '&confdir;'
+#  - name: Replace all &confdir;
+#    ansible.builtin.replace:
+#      path: /etc/inspircd/inspircd.conf
+#      regexp: '&confdir;'
 
   # Not sure why &piddir; exists if not defined
-  - name: Replace all &piddir;
-    ansible.builtin.replace:
-      path: /etc/inspircd/inspircd.conf
-      regexp: '&piddir;'
+#  - name: Replace all &piddir;
+#    ansible.builtin.replace:
+#      path: /etc/inspircd/inspircd.conf
+#      regexp: '&piddir;'
 
   - name: Make Apache VHost file
     ansible.builtin.copy:
