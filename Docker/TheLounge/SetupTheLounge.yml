@@ -1,0 +1,54 @@
+# Run with
+# ansible-playbook SetupTheLounge.yml
+# https://thelounge.chat/
+
+---
+- name: Setup The Lounge
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/thelounge
+      - /opt/DockerSwarmData/thelounge/config
+      - /root/docker
+      - /root/docker/thelounge
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/thelounge
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Deploy The Lounge from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/thelounge
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/thelounge.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName thelounge.orians.org
+          ServerAlias thelounge.stage.orians.org thelounge
+          ProxyPass / http://127.0.0.1:7000/
+          ProxyPassReverse / http://127.0.0.1:7000/
+        </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+
