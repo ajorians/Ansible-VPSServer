@@ -74,6 +74,3 @@
     register: result
     when: user_exists.stat.exists == false
 
-  - name: Obtain SSL certificate
-    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d mail.orians.org
-

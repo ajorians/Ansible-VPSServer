@@ -45,9 +45,11 @@
           ProxyPass / http://127.0.0.1:9200/
           ProxyPassReverse / http://127.0.0.9200/
         </VirtualHost>
+    notify: Restart Apache2
 
-  - name: Restart Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
+  handlers:
+    - name: Restart Apache2
+      ansible.builtin.systemd:
+        name: apache2
+        state: restarted
 

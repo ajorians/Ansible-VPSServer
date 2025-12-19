@@ -1,0 +1,13 @@
+# Run with:
+# ansible-playbook InstallUnzip.yml
+
+---
+- name: Install Unzip
+  hosts: all
+  tasks:
+
+  - name: Install unzip package on OpenSUSE/SUSE Linux
+    zypper:
+      name: unzip
+      state: present
+

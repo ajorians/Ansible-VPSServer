@@ -1,0 +1,68 @@
+# Run with:
+# ansible-playbook ObtainSSLCertificates.yml
+
+---
+- name: Obtain SSL Certificates
+  hosts: all
+  tasks:
+
+  - name: Gather package facts
+    ansible.builtin.package_facts:
+      manager: auto
+
+  - name: Check if mail SSL Certificate file exists
+    stat:
+      path: /etc/letsencrypt/live/mail.orians.org/cert.pem
+    register: mailcert_exists
+
+  - name: Stop Apache2 service
+    ansible.builtin.systemd:
+      state: stopped
+      name: apache2
+    when:
+      - mailcert_exists.stat.exists == false
+      - "'apache2' in ansible_facts.packages"
+    notify: Restart Apache2
+
+  - name: Obtain mail SSL certificate
+    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d mail.orians.org
+
+  - name: Check if www SSL Certificate file exists
+    stat:
+      path: /etc/letsencrypt/live/www.orians.org/cert.pem
+    register: wwwcert_exists
+
+  - name: Stop Apache2 service
+    ansible.builtin.systemd:
+      state: stopped
+      name: apache2
+    when:
+      - wwwcert_exists.stat.exists == false
+      - "'apache2' in ansible_facts.packages"
+    notify: Restart Apache2
+
+  - name: Obtain www SSL certificate
+    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d www.orians.org
+
+  - name: Check if wiki SSL Certificate file exists
+    stat:
+      path: /etc/letsencrypt/live/wiki.orians.org/cert.pem
+    register: wikicert_exists
+
+  - name: Stop Apache2 service
+    ansible.builtin.systemd:
+      state: stopped
+      name: apache2
+    when:
+      - wikicert_exists.stat.exists == false
+      - "'apache2' in ansible_facts.packages"
+    notify: Restart Apache2
+
+  - name: Obtain wiki SSL certificate
+    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d wiki.orians.org
+
+  handlers:
+    - name: Restart Apache2
+      ansible.builtin.systemd:
+        name: apache2
+        state: restarted

@@ -6,6 +6,12 @@
   hosts: all
   tasks:
 
+  - name: Add Server:Monitoring repository
+    community.general.zypper_repository:
+      repo: 'https://download.opensuse.org/repositories/server:monitoring/16.0/server:monitoring.repo'
+      auto_import_keys: true
+      runrefresh: true
+
   - name: Install Ftop package on OpenSUSE/SUSE Linux
     zypper:
       name: ftop

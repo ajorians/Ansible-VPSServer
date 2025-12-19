@@ -159,7 +159,7 @@
       name: apache2
 
   - name: Obtain SSL certificate
-    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d irc.orians.org
+    shell: certbot --agree-tos --webroot -m ajorians@gmail.com -n -d irc.orians.org
 
   - name: Install gnutls package on OpenSUSE/SUSE Linux
     zypper:

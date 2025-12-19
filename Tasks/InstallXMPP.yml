@@ -32,7 +32,7 @@
       line: 'VirtualHost "orians.org"'
 
   - name: Obtain SSL certificate
-    shell: certbot --agree-tos --apache -m ajorians@gmail.com -n -d orians.org
+    shell: certbot --agree-tos --webroot -m ajorians@gmail.com -n -d orians.org
 
   - name: Tell Prosody about SSL certificate
     shell: prosodyctl --root cert import /etc/letsencrypt/live/

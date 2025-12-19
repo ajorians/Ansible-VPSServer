@@ -31,8 +31,10 @@
 - import_playbook: Tasks/InstallScreen.yml
 - import_playbook: Tasks/InstallRTorrent.yml
 - import_playbook: Tasks/InstallUnrar.yml
+- import_playbook: Tasks/InstallUnzip.yml
 - import_playbook: Tasks/InstallRSync.yml
 - import_playbook: Tasks/InstallCertbot.yml
+- import_playbook: Tasks/ObtainSSLCertificates.yml
 - import_playbook: Tasks/InstallApache2.yml
 #- import_playbook: Tasks/InstallPhp.yml
 - import_playbook: Tasks/InstallKillAll.yml
@@ -84,6 +86,4 @@
 - import_playbook: Tasks/SetupAsterisk.yml
 - import_playbook: Tasks/InstallFreePBX.yml 
 - import_playbook: Tasks/SetupFreePBX.yml 
-
-- import_playbook: SetupSSL.yml
 

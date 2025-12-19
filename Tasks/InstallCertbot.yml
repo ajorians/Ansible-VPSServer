@@ -6,46 +6,6 @@
   hosts: all
   tasks:
 
-  - name: Add Leap 15.6 Snappy repo and add its gpg key
-    community.general.zypper_repository:
-      name: snappy
-      repo: 'https://download.opensuse.org/repositories/system:/snappy/openSUSE_Leap_15.6'
-      state: present
-      auto_import_keys: true
-
-  - name: Install Snapd package on OpenSUSE/SUSE Linux
-    zypper:
-      name: snapd
-      state: present
-
-  - name: Enable Snapd service
-    ansible.builtin.systemd:
-      name: snapd
-      enabled: yes
-
-  - name: Start Snapd service
-    ansible.builtin.systemd:
-      state: restarted
-      name: snapd
-
-  - name: Enable Snap AppArmor service
-    ansible.builtin.systemd:
-      name: snapd.apparmor
-      enabled: yes
-
-  - name: Start Snap AppArmor service
-    ansible.builtin.systemd:
-      state: restarted
-      name: snapd.apparmor
-
   - name: Install Certbot
-    community.general.snap:
-      classic: true
-      name:
-        - certbot
-
-  - name: Create a symbolic link to Certbot
-    ansible.builtin.file:
-      src: /snap/bin/certbot
-      dest: /usr/bin/certbot
-      state: link
+    zypper:
+      name: python313-certbot

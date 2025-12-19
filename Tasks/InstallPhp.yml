@@ -8,7 +8,7 @@
 
   - name: Add PHP repository
     community.general.zypper_repository:
-      repo: 'https://download.opensuse.org/repositories/devel:/languages:/php:/php82/openSUSE_Leap_15.6/devel:languages:php:php82.repo'
+      repo: 'https://download.opensuse.org/repositories/devel:languages:php:php82/16.0/devel:languages:php:php82.repo'
       auto_import_keys: true
       runrefresh: true
 
