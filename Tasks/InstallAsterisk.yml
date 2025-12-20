@@ -41,7 +41,7 @@
 
   - name: Install NodeJS package on OpenSUSE/SUSE Linux
     zypper:
-      name: nodejs20
+      name: nodejs22
       state: present
 
   - name: Install NodeJS-Common package on OpenSUSE/SUSE Linux
@@ -51,7 +51,7 @@
 
   - name: Install NPM package on OpenSUSE/SUSE Linux
     zypper:
-      name: npm20
+      name: npm22
       state: present
 
   - name: Install UnixODBC package on OpenSUSE/SUSE Linux
@@ -62,6 +62,11 @@
   - name: Install UnixODBC-devel package on OpenSUSE/SUSE Linux
     zypper:
       name: unixODBC-devel
+      state: present
+
+  - name: Install Subversion package on OpenSUSE/SUSE Linux
+    zypper:
+      name: subversion
       state: present
 
   - name: Check if Asterisk is installed

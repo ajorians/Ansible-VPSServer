@@ -43,13 +43,17 @@
           ProxyPass / http://127.0.0.1:3001/
           ProxyPassReverse / http://127.0.0.3001/
         </VirtualHost>
-
-  - name: Restart Apache2 service
-    ansible.builtin.systemd:
-      state: restarted
-      name: apache2
+    notify:
+    - Restart Apache2 service
 
   - name: Print how to connect witth Flood
     ansible.builtin.debug:
       msg: "RTorrent exposes /opt/DockerSwarmData/rtorrent/rpc.socket so the way
            the Docker container is setup it would be /socket/rpc.socket"
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+
