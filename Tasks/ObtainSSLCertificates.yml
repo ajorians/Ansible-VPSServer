@@ -4,62 +4,91 @@
 ---
 - name: Obtain SSL Certificates
   hosts: all
+  vars:
+    certs:
+      - name: wiki
+        domain: wiki.orians.org
+        cert_path: /etc/letsencrypt/live/wiki.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: mail
+        domain: mail.orians.org
+        cert_path: /etc/letsencrypt/live/mail.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: www
+        domain: www.orians.org
+        cert_path: /etc/letsencrypt/live/www.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: jellyfin
+        domain: jellyfin.orians.org
+        cert_path: /etc/letsencrypt/live/jellyfin.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: nextcloud
+        domain: nextcloud.orians.org
+        cert_path: /etc/letsencrypt/live/nextcloud.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: vpssync
+        domain: vpssync.orians.org
+        cert_path: /etc/letsencrypt/live/vpssync.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: phpmyadmin
+        domain: phpmyadmin.orians.org
+        cert_path: /etc/letsencrypt/live/phpmyadmin.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: mediaassets
+        domain: mediaassets.orians.org
+        cert_path: /etc/letsencrypt/live/mediaassets.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
+
+      - name: birthdays
+        domain: birthdays.orians.org
+        cert_path: /etc/letsencrypt/live/birthdays.orians.org/cert.pem
+        service: apache2
+        email: ajorians@gmail.com
   tasks:
 
   - name: Gather package facts
     ansible.builtin.package_facts:
       manager: auto
 
-  - name: Check if mail SSL Certificate file exists
+  - name: Check if SSL Certificate file exists
     stat:
-      path: /etc/letsencrypt/live/mail.orians.org/cert.pem
-    register: mailcert_exists
+      path: "{{ item.cert_path }}"
+    loop: "{{ certs }}"
+    register: cert_stat
 
-  - name: Stop Apache2 service
+  - name: Stop Apache2 if cert is missing
     ansible.builtin.systemd:
+      name: "{{ item.item.service }}"
       state: stopped
-      name: apache2
     when:
-      - mailcert_exists.stat.exists == false
+      - not item.stat.exists
       - "'apache2' in ansible_facts.packages"
+    loop: "{{ cert_stat.results }}"
     notify: Restart Apache2
 
-  - name: Obtain mail SSL certificate
-    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d mail.orians.org
-
-  - name: Check if www SSL Certificate file exists
-    stat:
-      path: /etc/letsencrypt/live/www.orians.org/cert.pem
-    register: wwwcert_exists
-
-  - name: Stop Apache2 service
-    ansible.builtin.systemd:
-      state: stopped
-      name: apache2
-    when:
-      - wwwcert_exists.stat.exists == false
-      - "'apache2' in ansible_facts.packages"
-    notify: Restart Apache2
-
-  - name: Obtain www SSL certificate
-    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d www.orians.org
-
-  - name: Check if wiki SSL Certificate file exists
-    stat:
-      path: /etc/letsencrypt/live/wiki.orians.org/cert.pem
-    register: wikicert_exists
-
-  - name: Stop Apache2 service
-    ansible.builtin.systemd:
-      state: stopped
-      name: apache2
-    when:
-      - wikicert_exists.stat.exists == false
-      - "'apache2' in ansible_facts.packages"
-    notify: Restart Apache2
-
-  - name: Obtain wiki SSL certificate
-    shell: certbot certonly --agree-tos --standalone -m ajorians@gmail.com -n -d wiki.orians.org
+  - name: Obtain SSL certificates
+    ansible.builtin.shell: >
+      certbot certonly --agree-tos --standalone
+      -m {{ item.item.email }}
+      -n
+      -d {{ item.item.domain }}
+    when: not item.stat.exists
+    loop: "{{ cert_stat.results }}"
 
   handlers:
     - name: Restart Apache2

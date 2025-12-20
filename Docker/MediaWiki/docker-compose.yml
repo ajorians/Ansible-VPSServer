@@ -1,17 +1,10 @@
-version: "3"
-
 services:
   mediawiki:
-    image: mediawiki:latest
+    image: ghcr.io/ajorians/mediawiki:latest
     container_name: mediawiki
-    ports:
-      - "9000:80" # <Host Port>:<Container Port>
-    environment:
-      MEDIAWIKI_DB_HOST: 10.0.0.14
-      MEDIAWIKI_DB_USER: wikiuser
-      MEDIAWIKI_DB_PASSWORD: wikipassword
-      MEDIAWIKI_DB_NAME: mediawiki
+#First time running comment out the volumes section as you don't have a valid file you can mount yet
     volumes:
-      - /opt/DockerSwarmData/mediawiki/images:/var/www/html/images
-      - /opt/DockerSwarmData/mediawiki/LocalSettings.php:/var/www/html/LocalSettings.php
+      - /opt/DockerSwarmData/mediawiki/LocalSettings.php:/srv/www/htdocs/LocalSettings.php
+    ports:
+      - 8080:80 # <Host Port>:<Container Port>
     restart: unless-stopped

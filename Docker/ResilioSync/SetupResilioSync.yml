@@ -34,6 +34,13 @@
     community.docker.docker_compose_v2:
       project_src: /root/docker/resiliosync
 
+  - name: Print helpful information
+    ansible.builtin.debug:
+      msg: |
+       You'll need to apply a license key.  From Raspberry400 run |
+       scp -O -r ResilioSyncKey/ ajorians@orians.org:~/Documents
+       Then copy that to /mnt/sync
+
   - name: Make Apache VHost file
     ansible.builtin.copy:
       dest: /etc/apache2/vhosts.d/resiliosync.conf
