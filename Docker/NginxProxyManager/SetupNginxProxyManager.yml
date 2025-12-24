@@ -1,0 +1,35 @@
+# Run with
+# ansible-playbook SetupNginxProxyManager.yml
+# https://nginxproxymanager.com/setup/
+
+---
+- name: Setup Nginx Proxy Manager
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/nginxproxymanager
+      - /opt/DockerSwarmData/nginxproxymanager/data
+      - /root/docker
+      - /root/docker/nginx_proxy_manager
+      - /mnt/backups
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/nginx_proxy_manager
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: NGinx Proxy Manager from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/nginx_proxy_manager
+

@@ -27,6 +27,23 @@
       group: users
       mode: 0777
 
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - mediawiki
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: wikiuser
+      host: '%'
+      password: wikipassword 
+      priv:
+        'mediawiki.*': 'ALL,GRANT'
+
   - name: Deploy MediaWiki from a compose file
     community.docker.docker_compose_v2:
       project_src: /root/docker/mediawiki

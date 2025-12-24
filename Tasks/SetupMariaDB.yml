@@ -36,7 +36,7 @@
     replace:
       path: /etc/my.cnf
       regexp: '^bind-address\s+=\s+127.0.0.1'
-      replace: '#bind-address = 127.0.0.1'
+      replace: 'bind-address = 0.0.0.0'
       backup: yes
 
   - name: Enable Maria service

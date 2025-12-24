@@ -63,7 +63,7 @@
       login_user: root
       state: present
       name: nfcphotouser
-      host: 'localhost'
+      host: '%'
       password: nfcphotopassword 
       priv:
         'nfcphoto.*': 'ALL,GRANT'
