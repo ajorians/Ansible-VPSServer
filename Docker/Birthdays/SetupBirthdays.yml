@@ -1,0 +1,74 @@
+# Run with
+# ansible-playbook SetupBirthdays.yml
+# https://birthdays.orians.org
+
+---
+- name: Setup Birthdays
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/birthdays
+      - /root/docker
+      - /root/docker/birthdays
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/birthdays
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - birthdays
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: birthdaysuser
+      host: '%'
+      password: birthdayspassword 
+      priv:
+        'birthdays.*': 'ALL,GRANT'
+
+  - name: Deploy Birthdays from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/birthdays
+
+  - name: Print some information
+    ansible.builtin.debug:
+      msg: |
+        Hope that helps
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/birthdays.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName birthdays.orians.org
+          ServerAlias birthday.orians.org
+          ProxyPass / http://127.0.0.1:8000/
+          ProxyPassReverse / http://127.0.0.1:8000/
+        </VirtualHost>
+#    notify:
+#    - Restart Apache2 service
+
+#  handlers:
+#    - name: Restart Apache2 service
+#      ansible.builtin.systemd:
+#        state: restarted
+#        name: apache2

@@ -1,0 +1,12 @@
+services:
+  birthdays:
+    image: ghcr.io/ajorians/birthdays:latest
+    container_name: birthdays
+    ports:
+      - 8000:80 # <Host Port>:<Container Port>
+    environment:
+      - DATABASE_HOST=database.orians.org
+      - DATABASE_USER=birthdaysuser
+      - DATABASE_PASSWD=birthdayspassword
+      - DATABASE_DB=birthdays
+    restart: unless-stopped
