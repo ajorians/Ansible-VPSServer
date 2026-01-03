@@ -1,0 +1,11 @@
+services:
+  backdrop:
+    image: ghcr.io/ajorians/backdrop:latest
+    container_name: backdrop
+    ports:
+      - 8088:80
+    environment:
+      BACKDROP_DB_HOST: database.orians.org
+      BACKDROP_DB_USER: backdropuser
+      BACKDROP_DB_PASSWORD: backdroppassword
+    restart: unless-stopped

@@ -1,0 +1,74 @@
+# Run with
+# ansible-playbook SetupBackdrop.yml
+# https://backdropcms.org/
+
+---
+- name: Setup Backdrop
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/backdrop
+      - /root/docker
+      - /root/docker/backdrop
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/backdrop
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - backdrop
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: backdropuser
+      host: '%'
+      password: backdroppassword 
+      priv:
+        'backdrop.*': 'ALL,GRANT'
+
+  - name: Deploy Backdrop from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/backdrop
+
+  - name: Print some information
+    ansible.builtin.debug:
+      msg: |
+        Use the connection information to database.orians.org
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/backdrop.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName www.orians.org
+          ServerAlias orians.org
+          ProxyPass / http://127.0.0.1:7071/
+          ProxyPassReverse / http://127.0.0.1:7071/
+        </VirtualHost>
+#    notify:
+#    - Restart Apache2 service #Using NGinx Proxy Manager now
+
+#  handlers:
+#    - name: Restart Apache2 service
+#      ansible.builtin.systemd:
+#        state: restarted
+#        name: apache2
