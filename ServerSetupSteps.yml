@@ -55,18 +55,11 @@
 
 - import_playbook: Tasks/SetupMediaAssets.yml
 
-#Using Docker image now
-#- import_playbook: Tasks/MediaWiki/InstallMediaWiki.yml
-#- import_playbook: Tasks/MediaWiki/InstallSemanticRating.yml
-#- import_playbook: Tasks/MediaWiki/SetMediaWikiLogo.yml
-#- import_playbook: Tasks/MediaWiki/InstallTemplateStyles.yml
-
-- import_playbook: Tasks/InstallBackdrop.yml
-
 - import_playbook: Docker/MediaWiki/SetupMediaWiki.yml
 - import_playbook: Docker/Jellyfin/SetupJellyfin.yml
 - import_playbook: Docker/NextCloud/SetupNextCloud.yml
 - import_playbook: Docker/Flood/SetupFlood.yml
+- import_playbook: Docker/Backdrop/SetupBackdrop.yml
 
 - import_playbook: Tasks/InstallBirthdays.yml 
 - import_playbook: Tasks/InstallPhpMyAdmin.yml 
