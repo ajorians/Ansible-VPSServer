@@ -8,7 +8,11 @@ services:
       - TZ=America/Detroit
     volumes:
       - /opt/DockerSwarmData/ngircd/config:/config
+      - /opt/DockerSwarmData/ngircd/ca:/ca
+      - /etc/letsencrypt:/letsencrypt
     ports:
       - 6667:6667
+      - 6697:6697
+      - 9999:9999
     restart: unless-stopped
 

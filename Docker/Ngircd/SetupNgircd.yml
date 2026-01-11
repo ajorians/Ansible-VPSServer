@@ -17,6 +17,7 @@
     loop:
       - /opt/DockerSwarmData/ngircd
       - /opt/DockerSwarmData/ngircd/config
+      - /opt/DockerSwarmData/ngircd/ca
       - /root/docker
       - /root/docker/ngircd
 
@@ -28,22 +29,132 @@
       group: users
       mode: 0777
 
+  - name: Replace Global Server name
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";Name = irc.example.net|Name = irc.example.net"
+      replace: "Name = irc.orians.org"
+
+  - name: Replace Global Server Info
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";Info = Server Info Text|Info = Server Info Text"
+      replace: "Info = Orians IRC"
+
+  - name: Replace MOTD File
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: 'MotdFile = /etc/ngircd/ngircd.motd'
+      replace: ';MotdFile = /etc/ngircd/ngircd.motd'
+
+  - name: Replace MOTD Phrase
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ';MotdPhrase = "Hello world!"'
+      replace: MotdPhrase = "Welcome To Orians IRC!"'
+
+  - name: Print SSL Information
+    debug:
+      msg: "In order to use SSL have a Let's Encrypt SSL setup."
+
+  - name: Check if LetsEncrypt SSL information exists
+    stat:
+      path: /etc/letsencrypt/archive/npm-14/privkey1.pem
+    register: letsencryptssl_exists
+
+  - name: Change LetsEncrypt permissions
+    ansible.builtin.file:
+      path: /etc/letsencrypt
+      mode: '0755'
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Change LetsEncrypt Archive permissions
+    ansible.builtin.file:
+      path: /etc/letsencrypt/archive
+      mode: '0755'
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Change Privkey permissions
+    ansible.builtin.file:
+      path: /etc/letsencrypt/archive/npm-14/privkey1.pem
+      mode: '0755'
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Enable SSL Section
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ';\[SSL\]'
+      replace: '[SSL]'
+    when: letsencryptssl_exists.stat.exists == true
+
+#The weird npm-14 is from NGinxProxyManager
+  - name: Enable CertFile
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";CertFile = :ETCDIR:/ssl/server-cert.pem|;CertFile = /etc/ngircd/ssl/server-cert.pem"
+      replace: "CertFile = /letsencrypt/archive/npm-14/fullchain1.pem"
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Enable KeyFile
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";KeyFile = :ETCDIR:/ssl/server-key.pem|;KeyFile = /etc/ngircd/ssl/server-key.pem"
+      replace: "KeyFile = /letsencrypt/archive/npm-14/privkey1.pem"
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Enable Additional Ports
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";Ports = 6697, 9999"
+      replace: "Ports = 6697, 9999"
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Enable SSLConnect
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";SSLConnect = yes"
+      replace: "SSLConnect = yes"
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Print SSL Connect Information
+    debug:
+      msg: |
+        "Once you did that you should be able to join via SSL.  Do check the logs via"
+        "docker container logs ngircd"
+        "as a file might be unreadable or something"
+    when: letsencryptssl_exists.stat.exists == true
+
+  - name: Print SSL Information
+    debug:
+      msg: "In order to use SSL have a Let's Encrypt SSL setup."
+# This is for SSL Verify
+  - name: Check if DHFile exists
+    stat:
+      path: /opt/DockerSwarmData/ngircd/ca/dhparams.pem 
+    register: dhparams_exists
+
+  - name: Print How Generate DHFile Information
+    debug:
+      msg: |
+        "For SSL Verify to generate the DHFile I used"
+        "openssl dhparam -2 -out /opt/DockerSwarmData/ngircd/ca/dhparams.pem 4096"
+        "It does takes about 5 minutes or more to run"
+    when: dhparams_exists.stat.exists == false
+
+  - name: Enable DHFile
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ';DHFile = :ETCDIR:/ssl/dhparams.pem|;DHFile = /etc/ngircd/ssl/dhparams.pem'
+      replace: "DHFile = /ca/dhparams.pem"
+    when: dhparams_exists.stat.exists == true
+
+  - name: Turn off SSLVerify
+    ansible.builtin.replace:
+      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
+      regexp: ";SSLVerify = yes"
+      replace: "SSLVerify = no"
+    when: dhparams_exists.stat.exists == true
+
   - name: Deploy NGIRCD from a compose file
     community.docker.docker_compose_v2:
       project_src: /root/docker/ngircd
-
-  - name: Replace Global Server name
-    ansible.builtin.lineinfile:
-      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
-      regexp: "Name = irc.example.net"
-      line: "Name = irc.orians.org"
-      state: present
-
-  - name: Replace Global Server Info
-    ansible.builtin.lineinfile:
-      path: /opt/DockerSwarmData/ngircd/config/ngircd.conf
-      regexp: "Info = Server Info Text"
-      line: "Info = Orians IRC"
-      state: present
-
-
