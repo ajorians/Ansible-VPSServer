@@ -1,17 +1,16 @@
-version: "3"
+volumes:
+  nextcloud:
+
 services:
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud:latest
-    container_name: nextcloud
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Detroit
-    volumes:
-      - /opt/DockerSwarmData/nextcloud/config:/config
-      - /opt/DockerSwarmData/nextcloud/data:/data
+    image: nextcloud
+    restart: always
     ports:
       - 5600:80
-      - 5601:443
-    restart: unless-stopped
-
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=nextpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextuser
+      - MYSQL_HOST=database.orians.org
