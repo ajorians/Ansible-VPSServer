@@ -14,3 +14,6 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextuser
       - MYSQL_HOST=database.orians.org
+      - OVERWRITEHOST=nextcloud.orians.org
+      - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=172.26.0.0/16 #From doing: docker inspect nginx_proxy_manager_default | grep -i 172
