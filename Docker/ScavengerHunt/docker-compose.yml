@@ -1,0 +1,12 @@
+services:
+  birthdays:
+    image: ghcr.io/ajorians/scavengerhunt:latest
+    container_name: scavengerhunt
+    ports:
+      - 8300:80 # <Host Port>:<Container Port>
+    environment:
+      - DATABASE_HOST=database.orians.org
+      - DATABASE_USER=scavengeruser
+      - DATABASE_PASSWD=scavengerpassword
+      - DATABASE_DB=scavengerhunt
+    restart: unless-stopped

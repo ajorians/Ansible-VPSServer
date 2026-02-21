@@ -60,6 +60,8 @@
 - import_playbook: Docker/NextCloud/SetupNextCloud.yml
 - import_playbook: Docker/Flood/SetupFlood.yml
 - import_playbook: Docker/Backdrop/SetupBackdrop.yml
+- import_playbook: Docker/ScavengerHunt/SetupScavengerHunt.yml
+- import_playbook: Docker/PhpMyAdmin/SetupPhpMyAdmin.yml
 
 - import_playbook: Tasks/InstallBirthdays.yml 
 - import_playbook: Tasks/InstallPhpMyAdmin.yml 

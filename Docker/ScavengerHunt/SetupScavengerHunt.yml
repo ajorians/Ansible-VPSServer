@@ -1,0 +1,74 @@
+# Run with
+# ansible-playbook ScavengerHunt.yml
+# https://scavengerhunt.orians.org
+
+---
+- name: Setup ScavengerHunt
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/scavengerhunt
+      - /root/docker
+      - /root/docker/scavengerhunt
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/scavengerhunt
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - scavengerhunt
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: scavengeruser
+      host: '%'
+      password: scavengerpassword 
+      priv:
+        'scavengerhunt.*': 'ALL,GRANT'
+
+  - name: Deploy ScavengerHunt from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/scavengerhunt
+
+  - name: Print some information
+    ansible.builtin.debug:
+      msg: |
+        Hope that helps
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/scavengerhunt.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName scavengerhunt.orians.org
+          ServerAlias scavengerhunt.orians.org
+          ProxyPass / http://127.0.0.1:8300/
+          ProxyPassReverse / http://127.0.0.1:8300/
+        </VirtualHost>
+#    notify:
+#    - Restart Apache2 service
+
+#  handlers:
+#    - name: Restart Apache2 service
+#      ansible.builtin.systemd:
+#        state: restarted
+#        name: apache2

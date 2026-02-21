@@ -1,0 +1,17 @@
+services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Detroit
+      - PMA_HOST=database.orians.org
+      - PMA_PORT=3306
+      - PMA_ARBITARY=1
+    ports:
+      - 8500:80 # <Host Port>:<Container Port>
+    networks:
+      - default
+    restart: unless-stopped
+
