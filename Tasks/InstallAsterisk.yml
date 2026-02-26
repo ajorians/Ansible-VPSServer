@@ -5,7 +5,7 @@
 - name: Install Asterisk
   hosts: all
   vars:
-    asterisk_version: "asterisk-23.1.0"
+    asterisk_version: "asterisk-23.2.2"
   tasks:
 
 #Install some prerequesits

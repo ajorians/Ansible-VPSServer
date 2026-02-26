@@ -323,17 +323,17 @@
             AllowOverride All
           </Directory>
         </VirtualHost>
-    notify:
-    - Killall httpd-prefork
-    - Restart Apache2 service
+#    notify:
+#    - Killall httpd-prefork
+#    - Restart Apache2 service
 
-  handlers:
-    - name: Killall httpd-prefork
-      ansible.builtin.shell: killall httpd-prefork --wait
-      ignore_errors: true # In case there is no process
+#  handlers:
+#    - name: Killall httpd-prefork
+#      ansible.builtin.shell: killall httpd-prefork --wait
+#      ignore_errors: true # In case there is no process
 
-    - name: Restart Apache2 service
-      ansible.builtin.systemd:
-        state: restarted
-        name: apache2
+#    - name: Restart Apache2 service
+#      ansible.builtin.systemd:
+#        state: restarted
+#        name: apache2
 
