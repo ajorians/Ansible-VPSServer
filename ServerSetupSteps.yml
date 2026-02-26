@@ -61,12 +61,13 @@
 - import_playbook: Docker/Flood/SetupFlood.yml
 - import_playbook: Docker/Backdrop/SetupBackdrop.yml
 - import_playbook: Docker/ScavengerHunt/SetupScavengerHunt.yml
+- import_playbook: Docker/NFCPhoto/SetupNFCPhoto.yml
 - import_playbook: Docker/PhpMyAdmin/SetupPhpMyAdmin.yml
 
 - import_playbook: Tasks/InstallBirthdays.yml 
 - import_playbook: Tasks/InstallPhpMyAdmin.yml 
-- import_playbook: Tasks/InstallScavengerHunt.yml 
-- import_playbook: Tasks/InstallNFCPhoto.yml 
+#- import_playbook: Tasks/InstallScavengerHunt.yml 
+#- import_playbook: Tasks/InstallNFCPhoto.yml 
 - import_playbook: Tasks/SetupFilesWeb.yml 
 
 - import_playbook: Docker/Ngircd/SetupNgircd.yml
@@ -77,8 +78,9 @@
 
 - import_playbook: Backups/InstallCronJobs.yml 
 
-- import_playbook: Tasks/InstallAsterisk.yml
-- import_playbook: Tasks/SetupAsterisk.yml
-- import_playbook: Tasks/InstallFreePBX.yml 
-- import_playbook: Tasks/SetupFreePBX.yml 
+# Need to use Docker image here
+#- import_playbook: Tasks/InstallAsterisk.yml
+#- import_playbook: Tasks/SetupAsterisk.yml
+#- import_playbook: Tasks/InstallFreePBX.yml 
+#- import_playbook: Tasks/SetupFreePBX.yml 
 

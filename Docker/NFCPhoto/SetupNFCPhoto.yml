@@ -1,0 +1,74 @@
+# Run with
+# ansible-playbook SetupNFCPhoto.yml
+# https://nfcphoto.orians.org
+
+---
+- name: Setup NFCPhoto
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/nfcphoto
+      - /root/docker
+      - /root/docker/nfcphoto
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/nfcphoto
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - nfcphoto
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: nfcphotouser
+      host: '%'
+      password: nfcphotopassword 
+      priv:
+        'nfcphoto.*': 'ALL,GRANT'
+
+  - name: Deploy NFCPhoto from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/nfcphoto
+
+  - name: Print some information
+    ansible.builtin.debug:
+      msg: |
+        Hope that helps
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/nfcphoto.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName nfcphoto.orians.org
+          ServerAlias nfcphoto.orians.org
+          ProxyPass / http://127.0.0.1:8320/
+          ProxyPassReverse / http://127.0.0.1:8320/
+        </VirtualHost>
+#    notify:
+#    - Restart Apache2 service
+
+#  handlers:
+#    - name: Restart Apache2 service
+#      ansible.builtin.systemd:
+#        state: restarted
+#        name: apache2

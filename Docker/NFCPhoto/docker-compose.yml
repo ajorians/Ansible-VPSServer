@@ -1,0 +1,12 @@
+services:
+  nfcphoto:
+    image: ghcr.io/ajorians/nfcphoto:latest
+    container_name: nfcphoto
+    ports:
+      - 8320:80 # <Host Port>:<Container Port>
+    environment:
+      - DATABASE_HOST=database.orians.org
+      - DATABASE_USER=nfcphotouser
+      - DATABASE_PASSWD=nfcphotopassword
+      - DATABASE_DB=nfcphoto
+    restart: unless-stopped
