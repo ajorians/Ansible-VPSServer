@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  miniserve:
+    image: docker.io/svenstaro/miniserve
+    container_name: miniserve
+    ports:
+      - "9017:8080" # <Host Port>:<Container Port>
+    volumes:
+      - "/opt/DockerSwarmData/miniserve:/tmp"
+    command: ["/tmp"]
+    restart: unless-stopped

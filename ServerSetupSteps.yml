@@ -72,6 +72,7 @@
 
 - import_playbook: Docker/Ngircd/SetupNgircd.yml
 - import_playbook: Docker/TheLounge/SetupTheLounge.yml
+- import_playbook: Docker/MiniServe/SetupMiniServe.yml
 #- import_playbook: Tasks/InstallInspircd.yml 
 #- import_playbook: Tasks/SetupIrcServer.yml
 #- import_playbook: Tasks/InstallXMPP.yml 
@@ -79,7 +80,7 @@
 - import_playbook: Backups/InstallCronJobs.yml 
 
 # Need to use Docker image here
-#- import_playbook: Tasks/InstallAsterisk.yml
+- import_playbook: Tasks/InstallAsterisk.yml
 #- import_playbook: Tasks/SetupAsterisk.yml
 #- import_playbook: Tasks/InstallFreePBX.yml 
 #- import_playbook: Tasks/SetupFreePBX.yml 
