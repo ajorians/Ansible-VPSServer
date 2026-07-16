@@ -1,0 +1,78 @@
+# Run with
+# ansible-playbook SetupKanboard.yml
+# https://kanboard.org/
+
+---
+- name: Setup Kanboard
+  hosts: all
+  tasks:
+
+  - name: Create directory for data
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: ajorians
+      group: users
+      mode: 0777
+    loop:
+      - /opt/DockerSwarmData/kanboard
+      - /opt/DockerSwarmData/kanboard/data
+      - /opt/DockerSwarmData/kanboard/plugins
+      - /root/docker
+      - /root/docker/kanboard
+
+  - name: Create Database
+    community.mysql.mysql_db:
+      login_user: root
+      name:
+        - kanboard
+      state: present
+
+  - name: Grant user access
+    community.mysql.mysql_user:
+      login_user: root
+      state: present
+      name: kanboarduser
+      host: '%'
+      password: kanboardpassword
+      priv:
+        'kanboard.*': 'ALL,GRANT'
+
+  - name: Copy the docker-compose file with owner and permissions
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /root/docker/kanboard
+      owner: ajorians
+      group: users
+      mode: 0777
+
+  - name: Deploy Kanboard from a compose file
+    community.docker.docker_compose_v2:
+      project_src: /root/docker/kanboard
+    environment:
+      DB_HOST: "database.orians.org"
+      DB_PORT: "3306"
+      DB_NAME: "kanboard"
+      DB_USER: "kanboarduser"
+      DB_PASSWORD: "kanboardpassword"
+
+  - name: Make Apache VHost file
+    ansible.builtin.copy:
+      dest: /etc/apache2/vhosts.d/kanboard.conf
+      force: false
+      content: |
+        <VirtualHost *:80>
+          ServerName kanboard.orians.org
+          ServerAlias kanboard.stage.orians.org kanboard
+          ProxyPass / http://127.0.0.1:5789/
+          ProxyPassReverse / http://127.0.0.1:5789/
+        </VirtualHost>
+    notify:
+    - Restart Apache2 service
+
+  handlers:
+    - name: Restart Apache2 service
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
+

@@ -1,0 +1,13 @@
+version: "3"
+services:
+  kanboard:
+    image: kanboard/kanboard:latest
+    container_name: kanboard
+    environment:
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+    volumes:
+      - /opt/DockerSwarmData/kanboard/data:/var/www/app/data
+      - /opt/DockerSwarmData/kanboard/plugins:/var/www/app/plugins
+    ports:
+      - 5789:80 # <Host Port>:<Container Port>
+    restart: unless-stopped
