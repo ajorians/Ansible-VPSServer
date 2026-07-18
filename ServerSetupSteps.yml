@@ -74,6 +74,7 @@
 - import_playbook: Docker/TheLounge/SetupTheLounge.yml
 - import_playbook: Docker/MiniServe/SetupMiniServe.yml
 - import_playbook: Docker/Kanboard/SetupKanboard.yml
+- import_playbook: Docker/Wekan/SetupWekan.yml
 #- import_playbook: Tasks/InstallInspircd.yml 
 #- import_playbook: Tasks/SetupIrcServer.yml
 #- import_playbook: Tasks/InstallXMPP.yml 
